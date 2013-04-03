@@ -60,7 +60,7 @@ extern NSString *const kFCWindSpeedError;
 
 @property (nonatomic, strong) NSString *apiKey;
 @property (nonatomic, strong) NSString *units;
-@property (nonatomic, strong) NSString *jsonp;
+@property (nonatomic, strong) NSString *callback;
 
 /**
  * Initializes and returns a new Forecastr singleton object

@@ -71,7 +71,7 @@ NSString *const kFCWindSpeedError = @"windSpeedError";
 
 @synthesize apiKey = _apiKey;
 @synthesize units = _units;
-@synthesize jsonp = _jsonp;
+@synthesize callback = _callback;
 
 # pragma mark - Singleton Methods
 
@@ -115,17 +115,29 @@ NSString *const kFCWindSpeedError = @"windSpeedError";
     if (time) urlString = [urlString stringByAppendingFormat:@",%.0f", [time doubleValue]];
     if (exclusions) urlString = [urlString stringByAppendingFormat:@"?exclude=%@", [self stringForExclusions:exclusions]];
     if (self.units) urlString = [urlString stringByAppendingFormat:@"%@units=%@", exclusions ? @"&" : @"?", self.units];
-    if (self.jsonp) urlString = [urlString stringByAppendingFormat:@"%@jsonp=%@", (exclusions || self.units) ? @"&" : @"?", self.jsonp];
+    if (self.callback) urlString = [urlString stringByAppendingFormat:@"%@callback=%@", (exclusions || self.units) ? @"&" : @"?", self.callback];
     
     // Asynchronously kick off the GET request on the API for the generated URL
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:urlString]];
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-        NSLog(@"URL for request: %@", urlString);
-        success(JSON);
-    } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
-        failure(error);
-    }];
-    [operation start];
+    
+    if (self.callback) {
+        AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+        [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+            NSLog(@"URL for request: %@", urlString);
+            success([[NSString alloc] initWithData:responseObject encoding:NSASCIIStringEncoding]);
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            failure(error);
+        }];
+        [operation start];
+    } else {
+        AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+            NSLog(@"URL for request: %@", urlString);
+            success(JSON);
+        } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
+            failure(error);
+        }];
+        [operation start];
+    }
 }
 
 // Generates a string from an array of exclusions

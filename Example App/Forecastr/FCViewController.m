@@ -39,7 +39,7 @@ static double kDemoDateTime = 1364991687; // EPOCH time
     // Kick off asking for weather while specifying exclusions
     [self forecastWithExclusions];
     
-    // Kick off asking for weather while specifying exclusions, SI units, and JSONP
+    // Kick off asking for weather while specifying exclusions, SI units, and JSONP callback
     [self forecastWithMultipleOptions];
 }
 
@@ -75,11 +75,11 @@ static double kDemoDateTime = 1364991687; // EPOCH time
     }];
 }
 
-// Kick off asking for weather while specifying exclusions, SI units, and JSONP
+// Kick off asking for weather while specifying exclusions, SI units, and JSONP callback
 - (void)forecastWithMultipleOptions
 {
     forecastr.units = kFCSIUnits;
-    forecastr.jsonp = @"someJavascriptFunctionName";
+    forecastr.callback = @"someJavascriptFunctionName";
     NSArray *tmpExclusions = [NSArray arrayWithObjects:kFCAlerts, kFCFlags, kFCMinutelyForecast, kFCHourlyForecast, kFCDailyForecast, nil];
     [forecastr getForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:tmpExclusions success:^(id JSON) {
         NSLog(@"JSON Response (w/ SI units, JSONP callback, and exclusions: %@) was: %@", tmpExclusions, JSON);
