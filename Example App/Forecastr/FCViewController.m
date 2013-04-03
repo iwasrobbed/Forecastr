@@ -28,7 +28,7 @@ static double kDemoDateTime = 1364991687; // EPOCH time
     // Get a reference to the Forecastr singleton and set the API key
     // (You only have to set the API key once since it's a singleton)
     forecastr = [Forecastr sharedManager];
-    forecastr.apiKey = @"abe9f926962c402b18e221b06e3cd8e8";
+    forecastr.apiKey = @"";
     
     // Kick off asking for weather data for Montreal on 2013-04-03 12:21:27 +0000
     [self forecastWithTime];
