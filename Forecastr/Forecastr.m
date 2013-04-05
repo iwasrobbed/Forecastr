@@ -116,7 +116,7 @@ NSString *const kFCWindSpeedError = @"windSpeedError";
 
 # pragma mark - Instance Methods
 
-// Request the specified forecast for the given location and optional time
+// Requests the specified forecast for the given location and optional time
 - (void)getForecastForLatitude:(double)lat
                      longitude:(double)lon
                           time:(NSNumber *)time

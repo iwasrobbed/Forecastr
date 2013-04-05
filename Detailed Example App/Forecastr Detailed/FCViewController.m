@@ -58,16 +58,23 @@
     [alert show];
 }
 
-# pragma mark - FCLocationManagerDelegate Callbacks
-
-// We successfully acquired the user's location
-- (void)didAcquireLocation:(CLLocation *)location
+// Basic forecast example
+- (void)exampleForecastForLocation:(CLLocation *)location
 {
     [forecastr getForecastForLocation:location time:nil exclusions:nil success:^(id JSON) {
         NSLog(@"JSON response was: %@", JSON);
     } failure:^(NSError *error) {
         NSLog(@"Error while retrieving forecast: %@", error.localizedDescription);
     }];
+}
+
+# pragma mark - FCLocationManagerDelegate Callbacks
+
+// We successfully acquired the user's location
+- (void)didAcquireLocation:(CLLocation *)location
+{
+    // Basic forecast example
+    [self exampleForecastForLocation:location];
 }
 
 // There was an error that prevented us from acquiring the location

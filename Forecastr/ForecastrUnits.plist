@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>precipAccumulation</key>
+	<dict>
+		<key>us</key>
+		<string>in</string>
+		<key>si</key>
+		<string>cm</string>
+	</dict>
+	<key>precipIntensity</key>
+	<dict>
+		<key>us</key>
+		<string>in/hr</string>
+		<key>si</key>
+		<string>mm/hr</string>
+	</dict>
+	<key>pressure</key>
+	<dict>
+		<key>us</key>
+		<string>mb</string>
+		<key>si</key>
+		<string>hPa</string>
+	</dict>
+	<key>temperature</key>
+	<dict>
+		<key>us</key>
+		<string>°F</string>
+		<key>si</key>
+		<string>°C</string>
+	</dict>
+	<key>temperatureMin</key>
+	<dict>
+		<key>us</key>
+		<string>°F</string>
+		<key>si</key>
+		<string>°C</string>
+	</dict>
+	<key>temperatureMax</key>
+	<dict>
+		<key>us</key>
+		<string>°F</string>
+		<key>si</key>
+		<string>°C</string>
+	</dict>
+	<key>visibility</key>
+	<dict>
+		<key>us</key>
+		<string>miles</string>
+		<key>si</key>
+		<string>km</string>
+	</dict>
+	<key>windSpeed</key>
+	<dict>
+		<key>us</key>
+		<string>mph</string>
+		<key>si</key>
+		<string>m/s</string>
+		<key>uk</key>
+		<string>mph</string>
+	</dict>
+</dict>
+</plist>

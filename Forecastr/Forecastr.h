@@ -82,13 +82,15 @@ extern NSString *const kFCWindSpeedError;
 /**
  * Initializes and returns a new Forecastr singleton object
  *
- * @return a new singleton object
+ * @return A new singleton object
  */
 
 + (id)sharedManager;
 
 /**
- * Request the forecast for the given location and optional time and/or exclusions
+ * Requests the forecast for the given location and optional time and/or exclusions
+ *
+ * @return The JSON response
  *
  * @param lat The latitude of the location.
  * @param long The longitude of the location.
@@ -97,7 +99,7 @@ extern NSString *const kFCWindSpeedError;
  * @param success A block object to be executed when the operation finishes successfully.
  * @param failure A block object to be executed when the operation finishes unsuccessfully.
  *
- * @discussion for many locations, it can be 60 years in the past to 10 years in the future.
+ * @discussion For many locations, it can be 60 years in the past to 10 years in the future.
  */
 
 - (void)getForecastForLatitude:(double)lat

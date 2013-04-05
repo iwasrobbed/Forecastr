@@ -31,6 +31,7 @@
 		D452BBC0170C772800B415CF /* Forecastr.m in Sources */ = {isa = PBXBuildFile; fileRef = D452BBB5170C772800B415CF /* Forecastr.m */; };
 		D452BBC3170C789500B415CF /* FCLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D452BBC2170C789500B415CF /* FCLocationManager.m */; };
 		D452BBC8170C81DD00B415CF /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D452BBC7170C81DD00B415CF /* CoreLocation.framework */; };
+		D4C6F813170DAF47005E2D75 /* ForecastrUnits.plist in Resources */ = {isa = PBXBuildFile; fileRef = D4C6F812170DAF47005E2D75 /* ForecastrUnits.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -76,6 +77,7 @@
 		D452BBC1170C789500B415CF /* FCLocationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FCLocationManager.h; sourceTree = "<group>"; };
 		D452BBC2170C789500B415CF /* FCLocationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FCLocationManager.m; sourceTree = "<group>"; };
 		D452BBC7170C81DD00B415CF /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		D4C6F812170DAF47005E2D75 /* ForecastrUnits.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = ForecastrUnits.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -180,10 +182,11 @@
 		D452BBB1170C772800B415CF /* Forecastr */ = {
 			isa = PBXGroup;
 			children = (
-				D452BBB2170C772800B415CF /* Forecastr+CLLocation.h */,
-				D452BBB3170C772800B415CF /* Forecastr+CLLocation.m */,
 				D452BBB4170C772800B415CF /* Forecastr.h */,
 				D452BBB5170C772800B415CF /* Forecastr.m */,
+				D452BBB2170C772800B415CF /* Forecastr+CLLocation.h */,
+				D452BBB3170C772800B415CF /* Forecastr+CLLocation.m */,
+				D4C6F812170DAF47005E2D75 /* ForecastrUnits.plist */,
 			);
 			name = Forecastr;
 			path = ../Forecastr;
@@ -273,6 +276,7 @@
 				D452BB8F170C76F900B415CF /* Default@2x.png in Resources */,
 				D452BB91170C76F900B415CF /* Default-568h@2x.png in Resources */,
 				D452BB94170C76F900B415CF /* MainStoryboard.storyboard in Resources */,
+				D4C6F813170DAF47005E2D75 /* ForecastrUnits.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -27,7 +27,7 @@
 
 @implementation Forecastr (CLLocation)
 
-// Request the forecast for the given CLLocation and optional time and/or exclusions
+// Requests the forecast for the given CLLocation and optional time and/or exclusions
 - (void)getForecastForLocation:(CLLocation *)location
                           time:(NSNumber *)time
                     exclusions:(NSArray *)exclusions
