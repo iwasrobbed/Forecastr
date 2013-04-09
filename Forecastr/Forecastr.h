@@ -73,6 +73,22 @@ extern NSString *const kFCWindBearing;
 extern NSString *const kFCWindSpeed;
 extern NSString *const kFCWindSpeedError;
 
+// Names used for weather icons
+extern NSString *const kFCIconClearDay;
+extern NSString *const kFCIconClearNight;
+extern NSString *const kFCIconRain;
+extern NSString *const kFCIconSnow;
+extern NSString *const kFCIconSleet;
+extern NSString *const kFCIconWind;
+extern NSString *const kFCIconFog;
+extern NSString *const kFCIconCloudy;
+extern NSString *const kFCIconPartlyCloudyDay;
+extern NSString *const kFCIconPartlyCloudyNight;
+extern NSString *const kFCIconHail;
+extern NSString *const kFCIconThunderstorm;
+extern NSString *const kFCIconTornado;
+extern NSString *const kFCIconHurricane;
+
 @interface Forecastr : NSObject
 
 @property (nonatomic, strong) NSString *apiKey;
@@ -108,5 +124,19 @@ extern NSString *const kFCWindSpeedError;
                     exclusions:(NSArray *)exclusions
                        success:(void (^)(id JSON))success
                        failure:(void (^)(NSError *error))failure;
+
+/**
+ * Returns a description based on the precicipation intensity
+ *
+ * @param precipIntensity The precipIntensity for the acquired forecast data
+ */
+- (NSString *)descriptionForPrecipIntensity:(float)precipIntensity;
+
+/**
+ * Returns an image name based on the weather icon type
+ *
+ * @param iconDescription The description of the weather icon for the acquired forecast data
+ */
+- (NSString *)imageNameForWeatherIconType:(NSString *)iconDescription;
 
 @end

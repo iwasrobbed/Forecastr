@@ -78,6 +78,22 @@ NSString *const kFCWindBearing = @"windBearing";
 NSString *const kFCWindSpeed = @"windSpeed";
 NSString *const kFCWindSpeedError = @"windSpeedError";
 
+// Names used for weather icons
+NSString *const kFCIconClearDay = @"clear-day";
+NSString *const kFCIconClearNight = @"clear-night";
+NSString *const kFCIconRain = @"rain";
+NSString *const kFCIconSnow = @"snow";
+NSString *const kFCIconSleet = @"sleet";
+NSString *const kFCIconWind = @"wind";
+NSString *const kFCIconFog = @"fog";
+NSString *const kFCIconCloudy = @"cloudy";
+NSString *const kFCIconPartlyCloudyDay = @"partly-cloudy-day";
+NSString *const kFCIconPartlyCloudyNight = @"partly-cloudy-night";
+NSString *const kFCIconHail = @"hail";
+NSString *const kFCIconThunderstorm = @"thunderstorm";
+NSString *const kFCIconTornado = @"tornado";
+NSString *const kFCIconHurricane = @"hurricane";
+
 @interface Forecastr ()
 {
     
@@ -165,6 +181,36 @@ NSString *const kFCWindSpeedError = @"windSpeedError";
         exclusionString = [exclusionString stringByAppendingFormat:idx == 0 ? @"%@" : @",%@", exclusion];
     }];
     return exclusionString;
+}
+
+// Returns a description based on the precicipation intensity
+- (NSString *)descriptionForPrecipIntensity:(float)precipIntensity
+{
+    if (precipIntensity < 0.002) { return @"None"; }
+    if (precipIntensity < 0.017) { return @"Very light"; }
+    if (precipIntensity < 0.1) { return @"Light"; }
+    if (precipIntensity < 0.4) { return @"Moderate"; }
+    else return @"Heavy";
+}
+
+// Returns an image name based on the weather icon type
+- (NSString *)imageNameForWeatherIconType:(NSString *)iconDescription
+{
+    if ([iconDescription isEqualToString:kFCIconClearDay]) { return @"clearDay.png"; }
+    else if ([iconDescription isEqualToString:kFCIconClearNight]) { return @"clearNight.png"; }
+    else if ([iconDescription isEqualToString:kFCIconRain]) { return @"rain.png"; }
+    else if ([iconDescription isEqualToString:kFCIconSnow]) { return @"snow.png"; }
+    else if ([iconDescription isEqualToString:kFCIconSleet]) { return @"sleet.png"; }
+    else if ([iconDescription isEqualToString:kFCIconWind]) { return @"wind.png"; }
+    else if ([iconDescription isEqualToString:kFCIconFog]) { return @"fog.png"; }
+    else if ([iconDescription isEqualToString:kFCIconCloudy]) { return @"cloudy.png"; }
+    else if ([iconDescription isEqualToString:kFCIconPartlyCloudyDay]) { return @"partlyCloudyDay.png"; }
+    else if ([iconDescription isEqualToString:kFCIconPartlyCloudyNight]) { return @"partlyCloudyNight.png"; }
+    else if ([iconDescription isEqualToString:kFCIconHail]) { return @"hail.png"; }
+    else if ([iconDescription isEqualToString:kFCIconThunderstorm]) { return @"thunderstorm.png"; }
+    else if ([iconDescription isEqualToString:kFCIconTornado]) { return @"tornado.png"; }
+    else if ([iconDescription isEqualToString:kFCIconHurricane]) { return @"hurricane.png"; }
+    else return @"cloudy.png"; // Default in case nothing matched
 }
 
 // Check for an empty API key
