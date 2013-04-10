@@ -63,8 +63,8 @@
 {
     [forecastr getForecastForLocation:location time:nil exclusions:nil success:^(id JSON) {
         NSLog(@"JSON response was: %@", JSON);
-    } failure:^(NSError *error) {
-        NSLog(@"Error while retrieving forecast: %@", error.localizedDescription);
+    } failure:^(NSError *error, id response) {
+        NSLog(@"Error while retrieving forecast: %@", [forecastr messageForError:error withResponse:response]);
     }];
 }
 

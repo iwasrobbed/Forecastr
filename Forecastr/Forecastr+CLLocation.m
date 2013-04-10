@@ -32,15 +32,15 @@
                           time:(NSNumber *)time
                     exclusions:(NSArray *)exclusions
                        success:(void (^)(id JSON))success
-                       failure:(void (^)(NSError *error))failure
+                       failure:(void (^)(NSError *error, id response))failure
 {
     float latitude = location.coordinate.latitude;
     float longitude = location.coordinate.longitude;
     
     [self getForecastForLatitude:latitude longitude:longitude time:time exclusions:exclusions success:^(id JSON) {
         success(JSON);
-    } failure:^(NSError *error) {
-        failure(error);
+    } failure:^(NSError *error, id response) {
+        failure(error, response);
     }];
 }
 

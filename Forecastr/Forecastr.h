@@ -123,7 +123,7 @@ extern NSString *const kFCIconHurricane;
                           time:(NSNumber *)time
                     exclusions:(NSArray *)exclusions
                        success:(void (^)(id JSON))success
-                       failure:(void (^)(NSError *error))failure;
+                       failure:(void (^)(NSError *error, id response))failure;
 
 /**
  * Returns a description based on the precicipation intensity
@@ -138,5 +138,13 @@ extern NSString *const kFCIconHurricane;
  * @param iconDescription The description of the weather icon for the acquired forecast data
  */
 - (NSString *)imageNameForWeatherIconType:(NSString *)iconDescription;
+
+/**
+ * Returns a string with the JSON error message, if given, or the appropriate localized description for the NSError object
+ *
+ * @param error The NSError object given in the failure block of the request
+ * @param response The JSON or AFHTTPRequestOperation (for JSONP only) object given in the failure block of the request
+ */
+- (NSString *)messageForError:(NSError *)error withResponse:(id)response;
 
 @end

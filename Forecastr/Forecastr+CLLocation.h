@@ -46,6 +46,6 @@
                           time:(NSNumber *)time
                     exclusions:(NSArray *)exclusions
                        success:(void (^)(id JSON))success
-                       failure:(void (^)(NSError *error))failure;
+                       failure:(void (^)(NSError *error, id response))failure;
 
 @end

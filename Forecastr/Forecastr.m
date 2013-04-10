@@ -138,7 +138,7 @@ NSString *const kFCIconHurricane = @"hurricane";
                           time:(NSNumber *)time
                     exclusions:(NSArray *)exclusions
                        success:(void (^)(id JSON))success
-                       failure:(void (^)(NSError *error))failure
+                       failure:(void (^)(NSError *error, id response))failure
 {
     // Check if we have an API key set
     [self checkForAPIKey];
@@ -156,18 +156,16 @@ NSString *const kFCIconHurricane = @"hurricane";
     if (self.callback) {
         AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
         [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-            NSLog(@"URL for request: %@", urlString);
             success([[NSString alloc] initWithData:responseObject encoding:NSASCIIStringEncoding]);
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            failure(error);
+            failure(error, operation);
         }];
         [operation start];
     } else {
         AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-            NSLog(@"URL for request: %@", urlString);
             success(JSON);
         } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
-            failure(error);
+            failure(error, JSON);
         }];
         [operation start];
     }
@@ -218,6 +216,22 @@ NSString *const kFCIconHurricane = @"hurricane";
 {
     if (!self.apiKey || !self.apiKey.length) {
         [NSException raise:@"Forecastr" format:@"Your Forecast.io API key must be populated before you can access the API.", nil];
+    }
+}
+
+// Returns a string with the JSON error message, if given, or the appropriate localized description for the NSError object
+- (NSString *)messageForError:(NSError *)error withResponse:(id)response
+{
+    if ([response isKindOfClass:[NSDictionary class]]) {
+        NSString *errorMsg = [response objectForKey:@"error"];
+        return (errorMsg.length) ? errorMsg : error.localizedDescription;
+    } else if ([response isKindOfClass:[AFHTTPRequestOperation class]]) {
+        AFHTTPRequestOperation *operation = (AFHTTPRequestOperation *)response;
+        int statusCode = operation.response.statusCode;
+        NSString *errorMsg = [NSHTTPURLResponse localizedStringForStatusCode:statusCode];
+        return [errorMsg stringByAppendingFormat:@" (code %d)", statusCode];
+    } else {
+        return error.localizedDescription;
     }
 }
 

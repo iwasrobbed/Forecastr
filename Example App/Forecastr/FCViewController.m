@@ -58,6 +58,9 @@ static double kDemoDateTime = 1364991687; // EPOCH time
     
     // Kick off asking for weather while specifying exclusions, SI units, and JSONP callback
     [self forecastWithMultipleOptions];
+    
+    // Kick off asking for weather for a bad latitude/longitude
+    [self forecastWithBadInputs];
 }
 
 // Kick off asking for weather data for Montreal on 2013-04-03 12:21:27 +0000
@@ -65,8 +68,8 @@ static double kDemoDateTime = 1364991687; // EPOCH time
 {
     [forecastr getForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:[NSNumber numberWithDouble:kDemoDateTime] exclusions:nil success:^(id JSON) {
         NSLog(@"JSON Response (for %@) was: %@", [NSDate dateWithTimeIntervalSince1970:kDemoDateTime], JSON);
-    } failure:^(NSError *error) {
-        NSLog(@"Error while retrieving forecast: %@", error.localizedDescription);
+    } failure:^(NSError *error, id response) {
+        NSLog(@"Error while retrieving forecast: %@", [forecastr messageForError:error withResponse:response]);
     }];
 }
 
@@ -75,8 +78,8 @@ static double kDemoDateTime = 1364991687; // EPOCH time
 {
     [forecastr getForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:nil success:^(id JSON) {
         NSLog(@"JSON Response was: %@", JSON);
-    } failure:^(NSError *error) {
-        NSLog(@"Error while retrieving forecast: %@", error.localizedDescription);
+    } failure:^(NSError *error, id response) {
+        NSLog(@"Error while retrieving forecast: %@", [forecastr messageForError:error withResponse:response]);
     }];
 }
 
@@ -87,8 +90,8 @@ static double kDemoDateTime = 1364991687; // EPOCH time
     NSArray *tmpExclusions = [NSArray arrayWithObjects:kFCAlerts, kFCFlags, kFCMinutelyForecast, kFCHourlyForecast, kFCDailyForecast, nil];
     [forecastr getForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:tmpExclusions success:^(id JSON) {
         NSLog(@"JSON Response (w/ exclusions: %@) was: %@", tmpExclusions, JSON);
-    } failure:^(NSError *error) {
-        NSLog(@"Error while retrieving forecast: %@", error.localizedDescription);
+    } failure:^(NSError *error, id response) {
+        NSLog(@"Error while retrieving forecast: %@", [forecastr messageForError:error withResponse:response]);
     }];
 }
 
@@ -100,8 +103,18 @@ static double kDemoDateTime = 1364991687; // EPOCH time
     NSArray *tmpExclusions = [NSArray arrayWithObjects:kFCAlerts, kFCFlags, kFCMinutelyForecast, kFCHourlyForecast, kFCDailyForecast, nil];
     [forecastr getForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:tmpExclusions success:^(id JSON) {
         NSLog(@"JSON Response (w/ SI units, JSONP callback, and exclusions: %@) was: %@", tmpExclusions, JSON);
-    } failure:^(NSError *error) {
-        NSLog(@"Error while retrieving forecast: %@", error.localizedDescription);
+    } failure:^(NSError *error, id response) {
+        NSLog(@"Error while retrieving forecast: %@", [forecastr messageForError:error withResponse:response]);
+    }];
+}
+
+// Kick off asking for weather for a bad latitude/longitude
+- (void)forecastWithBadInputs
+{
+    [forecastr getForecastForLatitude:999999.99 longitude:999999.99 time:nil exclusions:nil success:^(id JSON) {
+        // It won't be successful
+    } failure:^(NSError *error, id response) {
+        NSLog(@"Error while retrieving forecast: %@", [forecastr messageForError:error withResponse:response]);
     }];
 }
 
