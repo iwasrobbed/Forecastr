@@ -35,8 +35,8 @@ And here is a very basic example:
 
     [forecastr getForecastForLatitude:45.5081 longitude:-73.5550 time:nil exclusions:nil success:^(id JSON) {
         NSLog(@"JSON Response was: %@", JSON);
-    } failure:^(NSError *error) {
-        NSLog(@"Error while retrieving forecast: %@", error.localizedDescription);
+    } failure:^(NSError *error, id response) {
+        NSLog(@"Error while retrieving forecast: %@", [forecastr messageForError:error withResponse:response]);
     }];
 }
 
@@ -52,6 +52,10 @@ And here is a very basic example:
 * If you want to use a `CLLocation` object instead of pure latitude/longitude, import `Forecastr+CLLocation.h` instead of `Forecastr.h`
 
 ## License ##
+
+Essentially, this code is free to use in commercial and non-commercial projects with no attribution necessary.
+
+Legal stuff:
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
