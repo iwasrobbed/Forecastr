@@ -75,12 +75,21 @@
 {
     // Basic forecast example
     [self exampleForecastForLocation:location];
+    
+    // Set the location name
+    [locationManager findNameForLocation:location];
 }
 
 // There was an error that prevented us from acquiring the location
 - (void)didFailToAcquireLocationWithErrorMsg:(NSString *)errorMsg
 {
     [self showFatalErrorAlert:errorMsg];
+}
+
+// We found the location name or defaulted to localized coordinates
+- (void)didFindLocationName:(NSString *)locationName
+{
+    NSLog(@"Found location name to be: %@", locationName);
 }
 
 @end

@@ -25,10 +25,13 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
+#import <CoreLocation/CLGeocoder.h>
 
 @protocol FCLocationManagerDelegate <NSObject>
 - (void)didAcquireLocation:(CLLocation *)location;
 - (void)didFailToAcquireLocationWithErrorMsg:(NSString *)errorMsg;
+@optional
+- (void)didFindLocationName:(NSString *)locationName;
 @end
 
 @interface FCLocationManager : NSObject <CLLocationManagerDelegate>
@@ -37,5 +40,6 @@
 
 + (id)sharedManager;
 - (void)startUpdatingLocation;
+- (void)findNameForLocation:(CLLocation *)location;
 
 @end

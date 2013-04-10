@@ -136,6 +136,40 @@ static NSString *kFCTimeoutError = @"There was a timeout while attempting to det
     }
 }
 
+# pragma mark - Reverse Geocode
+
+// Reverse geocode the location name based on the coordinates
+- (void)findNameForLocation:(CLLocation *)location
+{
+    __block NSString *locationName;
+    CLGeocoder *geocoder = [[CLGeocoder alloc] init];
+    [geocoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error)
+     {
+         if (error) {
+             locationName = [self localizedCoordinateString];
+         } else if (placemarks && placemarks.count > 0) {
+             CLPlacemark *topResult = [placemarks objectAtIndex:0];
+             locationName = [topResult locality];
+             
+             // Check that the returned locality wasn't null
+             // If it is, just return the localized coordinates instead
+             if (!locationName.length)
+                 locationName = [self localizedCoordinateString];
+         }
+         
+         // Notify the delegate
+         [self.delegate didFindLocationName:locationName];
+     }];
+}
+
+// Returns a localized string containing the location coordinates
+- (NSString *)localizedCoordinateString
+{
+    NSString *latString = (bestEffortAtLocation.coordinate.latitude < 0) ? @"South" : @"North";
+    NSString *lonString = (bestEffortAtLocation.coordinate.longitude < 0) ? @"West" : @"East";
+    return [NSString stringWithFormat:@"%.3f %@, %.3f %@", fabs(bestEffortAtLocation.coordinate.latitude), latString, fabs(bestEffortAtLocation.coordinate.longitude), lonString];
+}
+
 # pragma mark - Location Services Delegate
 
 // Find and store a location measurement that meets the desired horizontal accuracy
