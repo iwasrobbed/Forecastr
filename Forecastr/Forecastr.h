@@ -176,4 +176,15 @@ extern NSString *const kFCIconHurricane;
  */
 - (void)cacheForecast:(id)forecast withURLString:(NSString *)urlString;
 
+/**
+ * Removes a cached forecast in case you want to refresh it prematurely
+ * Make sure you pass in the exact same params that you used in the original request
+ *
+ * @param lat The latitude of the location.
+ * @param long The longitude of the location.
+ * @param time (Optional) The desired time of the forecast in UNIX GMT format
+ * @param exclusions (Optional) An array which specifies which data blocks you would like left off the response
+ */
+- (void)removeCachedForecastForLatitude:(double)lat longitude:(double)lon time:(NSNumber *)time exclusions:(NSArray *)exclusions;
+
 @end

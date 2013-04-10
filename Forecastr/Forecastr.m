@@ -156,11 +156,7 @@ NSString *const kFCIconHurricane = @"hurricane";
     [self checkForAPIKey];
     
     // Generate the URL string based on the passed in params
-    NSString *urlString = [NSString stringWithFormat:@"https://api.forecast.io/forecast/%@/%.6f,%.6f", self.apiKey, lat, lon];
-    if (time) urlString = [urlString stringByAppendingFormat:@",%.0f", [time doubleValue]];
-    if (exclusions) urlString = [urlString stringByAppendingFormat:@"?exclude=%@", [self stringForExclusions:exclusions]];
-    if (self.units) urlString = [urlString stringByAppendingFormat:@"%@units=%@", exclusions ? @"&" : @"?", self.units];
-    if (self.callback) urlString = [urlString stringByAppendingFormat:@"%@callback=%@", (exclusions || self.units) ? @"&" : @"?", self.callback];
+    NSString *urlString = [self urlStringforLatitude:lat longitude:lon time:time exclusions:exclusions];
     
     // Check if we have a valid cache item that hasn't expired for this URL
     NSString *cacheKey = [self cacheKeyForURLString:urlString forLatitude:lat longitude:lon];
@@ -175,7 +171,7 @@ NSString *const kFCIconHurricane = @"hurricane";
     // If we got here, cache isn't enabled or we didn't find a valid/unexpired forecast
     // for this location in cache so let's query the servers for one
     
-    // Asynchronously kick off the GET request on the API for the generated URL
+    // Asynchronously kick off the GET request on the API for the generated URL (i.e. not the one used as a cache key)
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:urlString]];
     
     if (self.callback) {
@@ -255,6 +251,17 @@ NSString *const kFCIconHurricane = @"hurricane";
     }
 }
 
+// Generates a URL string for the given options
+- (NSString *)urlStringforLatitude:(double)lat longitude:(double)lon time:(NSNumber *)time exclusions:(NSArray *)exclusions
+{
+    NSString *urlString = [NSString stringWithFormat:@"https://api.forecast.io/forecast/%@/%.6f,%.6f", self.apiKey, lat, lon];
+    if (time) urlString = [urlString stringByAppendingFormat:@",%.0f", [time doubleValue]];
+    if (exclusions) urlString = [urlString stringByAppendingFormat:@"?exclude=%@", [self stringForExclusions:exclusions]];
+    if (self.units) urlString = [urlString stringByAppendingFormat:@"%@units=%@", exclusions ? @"&" : @"?", self.units];
+    if (self.callback) urlString = [urlString stringByAppendingFormat:@"%@callback=%@", (exclusions || self.units) ? @"&" : @"?", self.callback];
+    return urlString;
+}
+
 // Generates a string from an array of exclusions
 - (NSString *)stringForExclusions:(NSArray *)exclusions
 {
@@ -309,6 +316,22 @@ NSString *const kFCIconHurricane = @"hurricane";
     [userDefaults synchronize];
     
     //NSLog(@"Caching item for %@", urlString);
+}
+
+// Removes a cached forecast in case you want to refresh it prematurely
+- (void)removeCachedForecastForLatitude:(double)lat longitude:(double)lon time:(NSNumber *)time exclusions:(NSArray *)exclusions
+{
+    NSString *urlString = [self urlStringforLatitude:lat longitude:lon time:time exclusions:exclusions];
+    NSString *cacheKey = [self cacheKeyForURLString:urlString forLatitude:lat longitude:lon];
+    
+    NSMutableDictionary *cachedForecasts = [[userDefaults dictionaryForKey:kFCCacheKey] mutableCopy];
+    if (cachedForecasts) {
+        //NSLog(@"Removing cached item for %@", cacheKey);
+        [cachedForecasts removeObjectForKey:cacheKey];
+        [userDefaults setObject:cachedForecasts forKey:kFCCacheKey];
+        [userDefaults synchronize];
+    }
+
 }
 
 # pragma mark - Cache Private Methods

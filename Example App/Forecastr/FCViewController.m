@@ -69,6 +69,9 @@ static double kDemoDateTime = 1364991687; // EPOCH time
     
     // Kick off asking for weather for a bad latitude/longitude
     [self forecastWithBadInputs];
+    
+    // Remove a cached item prematurely (before it expires)
+    [self removeCachedItemPrematurely];
 }
 
 // Kick off asking for weather data for Montreal on 2013-04-03 12:21:27 +0000
@@ -124,6 +127,14 @@ static double kDemoDateTime = 1364991687; // EPOCH time
     } failure:^(NSError *error, id response) {
         NSLog(@"Error while retrieving forecast (don't worry, we forced this error on purpose): %@", [forecastr messageForError:error withResponse:response]);
     }];
+}
+
+// Remove a cached item prematurely (before it expires)
+- (void)removeCachedItemPrematurely
+{
+    // We will be removing the item that was cached in the `forecastWithoutTime` method
+    // You might have to run this app twice for it to be cached first (since the requests are async)
+    [forecastr removeCachedForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:nil];
 }
 
 @end
