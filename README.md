@@ -1,7 +1,7 @@
 Forecastr
 =========
 
-A simple Objective-C wrapper for Forecast.io
+A simple Objective-C wrapper to make asynchronous requests to the [Forecast.io API version 2](https://developer.forecast.io/docs/v2)
 
 **Note:** You will need to [request an API key](https://developer.forecast.io) and set that key when you first instantiate Forecastr, otherwise an exception will be thrown.
 
