@@ -44,4 +44,15 @@
     }];
 }
 
+// Removes a cached forecast in case you want to refresh it prematurely
+- (void)removeCachedForecastForLocation:(CLLocation *)location
+                                   time:(NSNumber *)time
+                             exclusions:(NSArray *)exclusions
+{
+    float latitude = location.coordinate.latitude;
+    float longitude = location.coordinate.longitude;
+    
+    [self removeCachedForecastForLatitude:latitude longitude:longitude time:time exclusions:exclusions];
+}
+
 @end
