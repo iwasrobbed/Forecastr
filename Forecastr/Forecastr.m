@@ -30,6 +30,13 @@
  * A common area for changing the names of all constants used in the JSON response
  */
 
+// Cache keys
+NSString *const kFCCacheKey = @"CachedForecasts";
+NSString *const kFCCacheArchiveKey = @"ArchivedForecast";
+NSString *const kFCCacheExpiresKey = @"ExpiresAt";
+NSString *const kFCCacheForecastKey = @"Forecast";
+NSString *const kFCCacheJSONPKey = @"JSONP";
+
 // Unit types
 NSString *const kFCUSUnits = @"us";
 NSString *const kFCSIUnits = @"si";
@@ -96,7 +103,7 @@ NSString *const kFCIconHurricane = @"hurricane";
 
 @interface Forecastr ()
 {
-    
+    NSUserDefaults *userDefaults;
 }
 @end
 
@@ -105,6 +112,9 @@ NSString *const kFCIconHurricane = @"hurricane";
 @synthesize apiKey = _apiKey;
 @synthesize units = _units;
 @synthesize callback = _callback;
+
+@synthesize cacheEnabled = _cacheEnabled;
+@synthesize cacheExpirationInMinutes = _cacheExpirationInMinutes;
 
 # pragma mark - Singleton Methods
 
@@ -121,7 +131,9 @@ NSString *const kFCIconHurricane = @"hurricane";
 - (id)init {
     if (self = [super init]) {
         // Init code here
-        
+        userDefaults = [NSUserDefaults standardUserDefaults];
+        self.cacheEnabled = YES; // Enable cache by default
+        self.cacheExpirationInMinutes = 30; // Set default of 30 minutes
     }
     return self;
 }
@@ -150,35 +162,41 @@ NSString *const kFCIconHurricane = @"hurricane";
     if (self.units) urlString = [urlString stringByAppendingFormat:@"%@units=%@", exclusions ? @"&" : @"?", self.units];
     if (self.callback) urlString = [urlString stringByAppendingFormat:@"%@callback=%@", (exclusions || self.units) ? @"&" : @"?", self.callback];
     
+    // Check if we have a valid cache item that hasn't expired for this URL
+    NSString *cacheKey = [self cacheKeyForURLString:urlString forLatitude:lat longitude:lon];
+    if (self.cacheEnabled) {
+        id cachedForecast = [self checkForecastCacheForURLString:cacheKey];
+        if (cachedForecast) {
+            success(cachedForecast);
+            return;
+        }
+    }
+    
+    // If we got here, cache isn't enabled or we didn't find a valid/unexpired forecast
+    // for this location in cache so let's query the servers for one
+    
     // Asynchronously kick off the GET request on the API for the generated URL
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:urlString]];
     
     if (self.callback) {
         AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
         [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-            success([[NSString alloc] initWithData:responseObject encoding:NSASCIIStringEncoding]);
+            NSString *JSONP = [[NSString alloc] initWithData:responseObject encoding:NSASCIIStringEncoding];
+            if (self.cacheEnabled) [self cacheForecast:JSONP withURLString:cacheKey];
+            success(JSONP);
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             failure(error, operation);
         }];
         [operation start];
     } else {
         AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+            if (self.cacheEnabled) [self cacheForecast:JSON withURLString:cacheKey];
             success(JSON);
         } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
             failure(error, JSON);
         }];
         [operation start];
     }
-}
-
-// Generates a string from an array of exclusions
-- (NSString *)stringForExclusions:(NSArray *)exclusions
-{
-    __block NSString *exclusionString = @"";
-    [exclusions enumerateObjectsUsingBlock:^(id exclusion, NSUInteger idx, BOOL *stop) {
-        exclusionString = [exclusionString stringByAppendingFormat:idx == 0 ? @"%@" : @",%@", exclusion];
-    }];
-    return exclusionString;
 }
 
 // Returns a description based on the precicipation intensity
@@ -211,14 +229,6 @@ NSString *const kFCIconHurricane = @"hurricane";
     else return @"cloudy.png"; // Default in case nothing matched
 }
 
-// Check for an empty API key
-- (void)checkForAPIKey
-{
-    if (!self.apiKey || !self.apiKey.length) {
-        [NSException raise:@"Forecastr" format:@"Your Forecast.io API key must be populated before you can access the API.", nil];
-    }
-}
-
 // Returns a string with the JSON error message, if given, or the appropriate localized description for the NSError object
 - (NSString *)messageForError:(NSError *)error withResponse:(id)response
 {
@@ -233,6 +243,83 @@ NSString *const kFCIconHurricane = @"hurricane";
     } else {
         return error.localizedDescription;
     }
+}
+
+# pragma mark - Private Methods
+
+// Check for an empty API key
+- (void)checkForAPIKey
+{
+    if (!self.apiKey || !self.apiKey.length) {
+        [NSException raise:@"Forecastr" format:@"Your Forecast.io API key must be populated before you can access the API.", nil];
+    }
+}
+
+// Generates a string from an array of exclusions
+- (NSString *)stringForExclusions:(NSArray *)exclusions
+{
+    __block NSString *exclusionString = @"";
+    [exclusions enumerateObjectsUsingBlock:^(id exclusion, NSUInteger idx, BOOL *stop) {
+        exclusionString = [exclusionString stringByAppendingFormat:idx == 0 ? @"%@" : @",%@", exclusion];
+    }];
+    return exclusionString;
+}
+
+# pragma mark - Cache Instance Methods
+
+// Checks the NSUserDefaults for a cached forecast that is still fresh
+- (id)checkForecastCacheForURLString:(NSString *)urlString
+{
+    NSDictionary *cachedForecasts = [userDefaults dictionaryForKey:kFCCacheKey];
+    if (cachedForecasts) {
+        // Create an NSString object from the coordinates as the dictionary key
+        NSDictionary *cacheItem = [cachedForecasts objectForKey:urlString];
+        // Check if the forecast exists and hasn't expired yet
+        if (cacheItem) {
+            NSDate *expirationTime = (NSDate *)[cacheItem objectForKey:kFCCacheExpiresKey];
+            NSDate *rightNow = [NSDate date];
+            if ([rightNow compare:expirationTime] == NSOrderedAscending) {
+                //NSLog(@"Found cached item for %@", urlString);
+                // Cache item is still fresh
+                return [cacheItem objectForKey:kFCCacheForecastKey];
+            }
+            // As a note, there is no need to remove any stale cache item since it will
+            // be overwritten when the forecast is cached again
+        }
+    }
+    // If we don't have anything fresh in the cache
+    return nil;
+}
+
+// Caches a forecast in NSUserDefaults based on the original URL string used to request it
+- (void)cacheForecast:(id)forecast withURLString:(NSString *)urlString
+{
+    NSMutableDictionary *cachedForecasts = [[userDefaults dictionaryForKey:kFCCacheKey] mutableCopy];
+    if (!cachedForecasts) cachedForecasts = [[NSMutableDictionary alloc] initWithCapacity:1];
+    
+    // Set up the new dictionary we are going to cache
+    NSDate *expirationDate = [[NSDate date] dateByAddingTimeInterval:self.cacheExpirationInMinutes * 60]; // X minutes from now
+    NSMutableDictionary *newCacheItem = [[NSMutableDictionary alloc] initWithCapacity:2];
+    [newCacheItem setObject:expirationDate forKey:kFCCacheExpiresKey];
+    [newCacheItem setObject:forecast forKey:kFCCacheForecastKey];
+    
+    // Save the new cache item and sync the user defaults
+    [cachedForecasts setObject:newCacheItem forKey:urlString];
+    [userDefaults setObject:cachedForecasts forKey:kFCCacheKey];
+    [userDefaults synchronize];
+    
+    //NSLog(@"Caching item for %@", urlString);
+}
+
+# pragma mark - Cache Private Methods
+
+// Truncates the latitude and longitude within the URL so that it's more generalized to the user's location
+// Otherwise, you end up requesting forecasts from the server even though your lat/lon has only changed by a very small amount
+- (NSString *)cacheKeyForURLString:(NSString *)urlString forLatitude:(double)lat longitude:(double)lon
+{
+    NSString *oldLatLon = [NSString stringWithFormat:@"%f,%f", lat, lon];
+    NSString *generalizedLatLon = [NSString stringWithFormat:@"%.2f,%.2f", lat, lon];
+    return [urlString stringByReplacingOccurrencesOfString:oldLatLon withString:generalizedLatLon];
 }
 
 @end

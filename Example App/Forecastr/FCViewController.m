@@ -47,6 +47,14 @@ static double kDemoDateTime = 1364991687; // EPOCH time
     forecastr = [Forecastr sharedManager];
     forecastr.apiKey = @"";
     
+    // Uncomment to change basic caching properties
+    //forecastr.cacheEnabled = NO; // Enabled by default
+    //forecastr.cacheExpirationInMinutes = 10; // 30 minutes by default
+    
+    // A note about caching: Forecastr caches based on the URL used to make the request
+    // so all params should be properly returned from the cached item just like they
+    // were originally requested
+    
     // Kick off asking for weather data for Montreal on 2013-04-03 12:21:27 +0000
     [self forecastWithTime];
     
@@ -114,7 +122,7 @@ static double kDemoDateTime = 1364991687; // EPOCH time
     [forecastr getForecastForLatitude:999999.99 longitude:999999.99 time:nil exclusions:nil success:^(id JSON) {
         // It won't be successful
     } failure:^(NSError *error, id response) {
-        NSLog(@"Error while retrieving forecast: %@", [forecastr messageForError:error withResponse:response]);
+        NSLog(@"Error while retrieving forecast (don't worry, we forced this error on purpose): %@", [forecastr messageForError:error withResponse:response]);
     }];
 }
 

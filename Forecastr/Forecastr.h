@@ -25,6 +25,12 @@
 
 #import <Foundation/Foundation.h>
 
+// Cache keys
+extern NSString *const kFCCacheKey;
+extern NSString *const kFCCacheArchiveKey;
+extern NSString *const kFCCacheExpiresKey;
+extern NSString *const kFCCacheForecastKey;
+
 // Unit types
 extern NSString *const kFCUSUnits;
 extern NSString *const kFCSIUnits;
@@ -92,8 +98,11 @@ extern NSString *const kFCIconHurricane;
 @interface Forecastr : NSObject
 
 @property (nonatomic, strong) NSString *apiKey;
-@property (nonatomic, strong) NSString *units;
+@property (nonatomic, strong) NSString *units; // Defaults to 'us'
 @property (nonatomic, strong) NSString *callback;
+
+@property (nonatomic, assign) BOOL cacheEnabled; // Defaults to YES
+@property (nonatomic, assign) int cacheExpirationInMinutes; // Defaults to 30 mins
 
 /**
  * Initializes and returns a new Forecastr singleton object
@@ -146,5 +155,25 @@ extern NSString *const kFCIconHurricane;
  * @param response The JSON or AFHTTPRequestOperation (for JSONP only) object given in the failure block of the request
  */
 - (NSString *)messageForError:(NSError *)error withResponse:(id)response;
+
+/**
+ * Checks the NSUserDefaults for a cached forecast that is still fresh
+ * This will save us round trips and usage for the Forecast.io servers
+ * self.cacheEnabled is YES by default, but you can disable it for testing or if you don't want to use it
+ *
+ * @return The JSON or JSONP response if found and still fresh, otherwise nil 
+ *
+ * @param forecast The returned JSON or JSONP for the forecast you wish to cache
+ * @param urlString The original URL string used to make the request (this assumes your API key doesn't change)
+ */
+- (id)checkForecastCacheForURLString:(NSString *)urlString;
+
+/**
+ * Caches a forecast in NSUserDefaults based on the original URL string used to request it
+ *
+ * @param forecast The returned JSON or JSONP for the forecast you wish to cache
+ * @param urlString The original URL string used to make the request (this assumes your API key doesn't change)
+ */
+- (void)cacheForecast:(id)forecast withURLString:(NSString *)urlString;
 
 @end
