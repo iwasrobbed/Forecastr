@@ -187,4 +187,9 @@ extern NSString *const kFCIconHurricane;
  */
 - (void)removeCachedForecastForLatitude:(double)lat longitude:(double)lon time:(NSNumber *)time exclusions:(NSArray *)exclusions;
 
+/**
+ * Flushes all forecasts from the cache
+ */
+- (void)flushCache;
+
 @end

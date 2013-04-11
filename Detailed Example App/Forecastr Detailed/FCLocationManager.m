@@ -146,7 +146,7 @@ static NSString *kFCTimeoutError = @"There was a timeout while attempting to det
     [geocoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error)
      {
          if (error) {
-             locationName = [self localizedCoordinateString];
+             locationName = [self localizedCoordinateStringForLocation:location];
          } else if (placemarks && placemarks.count > 0) {
              CLPlacemark *topResult = [placemarks objectAtIndex:0];
              locationName = [topResult locality];
@@ -154,7 +154,7 @@ static NSString *kFCTimeoutError = @"There was a timeout while attempting to det
              // Check that the returned locality wasn't null
              // If it is, just return the localized coordinates instead
              if (!locationName.length)
-                 locationName = [self localizedCoordinateString];
+                 locationName = [self localizedCoordinateStringForLocation:location];
          }
          
          // Notify the delegate
@@ -163,11 +163,11 @@ static NSString *kFCTimeoutError = @"There was a timeout while attempting to det
 }
 
 // Returns a localized string containing the location coordinates
-- (NSString *)localizedCoordinateString
+- (NSString *)localizedCoordinateStringForLocation:(CLLocation *)location
 {
-    NSString *latString = (bestEffortAtLocation.coordinate.latitude < 0) ? @"South" : @"North";
-    NSString *lonString = (bestEffortAtLocation.coordinate.longitude < 0) ? @"West" : @"East";
-    return [NSString stringWithFormat:@"%.3f %@, %.3f %@", fabs(bestEffortAtLocation.coordinate.latitude), latString, fabs(bestEffortAtLocation.coordinate.longitude), lonString];
+    NSString *latString = (location.coordinate.latitude < 0) ? @"South" : @"North";
+    NSString *lonString = (location.coordinate.longitude < 0) ? @"West" : @"East";
+    return [NSString stringWithFormat:@"%.3f %@, %.3f %@", fabs(location.coordinate.latitude), latString, fabs(location.coordinate.longitude), lonString];
 }
 
 # pragma mark - Location Services Delegate

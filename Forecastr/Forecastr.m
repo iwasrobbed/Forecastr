@@ -158,6 +158,10 @@ NSString *const kFCIconHurricane = @"hurricane";
     // Generate the URL string based on the passed in params
     NSString *urlString = [self urlStringforLatitude:lat longitude:lon time:time exclusions:exclusions];
     
+#ifndef NDEBUG
+    NSLog(@"Forecastr: Checking forecast for %@", urlString);
+#endif
+    
     // Check if we have a valid cache item that hasn't expired for this URL
     NSString *cacheKey = [self cacheKeyForURLString:urlString forLatitude:lat longitude:lon];
     if (self.cacheEnabled) {
@@ -277,30 +281,47 @@ NSString *const kFCIconHurricane = @"hurricane";
 // Checks the NSUserDefaults for a cached forecast that is still fresh
 - (id)checkForecastCacheForURLString:(NSString *)urlString
 {
-    NSDictionary *cachedForecasts = [userDefaults dictionaryForKey:kFCCacheKey];
-    if (cachedForecasts) {
-        // Create an NSString object from the coordinates as the dictionary key
-        NSDictionary *cacheItem = [cachedForecasts objectForKey:urlString];
-        // Check if the forecast exists and hasn't expired yet
-        if (cacheItem) {
-            NSDate *expirationTime = (NSDate *)[cacheItem objectForKey:kFCCacheExpiresKey];
-            NSDate *rightNow = [NSDate date];
-            if ([rightNow compare:expirationTime] == NSOrderedAscending) {
-                //NSLog(@"Found cached item for %@", urlString);
-                // Cache item is still fresh
-                return [cacheItem objectForKey:kFCCacheForecastKey];
+    @try {
+        NSDictionary *cachedForecasts = [userDefaults dictionaryForKey:kFCCacheKey];
+        if (cachedForecasts) {
+            // Create an NSString object from the coordinates as the dictionary key
+            NSData *archivedCacheItem = [cachedForecasts objectForKey:urlString];
+            // Check if the forecast exists and hasn't expired yet
+            if (archivedCacheItem) {
+                NSDictionary *cacheItem = [self objectForArchive:archivedCacheItem];
+                if (cacheItem) {
+                    NSDate *expirationTime = (NSDate *)[cacheItem objectForKey:kFCCacheExpiresKey];
+                    NSDate *rightNow = [NSDate date];
+                    if ([rightNow compare:expirationTime] == NSOrderedAscending) {
+#ifndef NDEBUG
+                        NSLog(@"Forecastr: Found cached item for %@", urlString);
+#endif
+                        // Cache item is still fresh
+                        return [cacheItem objectForKey:kFCCacheForecastKey];
+                    }
+                    // As a note, there is no need to remove any stale cache item since it will
+                    // be overwritten when the forecast is cached again
+                }
             }
-            // As a note, there is no need to remove any stale cache item since it will
-            // be overwritten when the forecast is cached again
         }
+        // If we don't have anything fresh in the cache
+        return nil;
     }
-    // If we don't have anything fresh in the cache
-    return nil;
+    @catch (NSException *exception) {
+#ifndef NDEBUG
+        NSLog(@"Forecastr: Caught an exception while reading from cache (%@)", exception);
+#endif
+        return nil;
+    }
 }
 
 // Caches a forecast in NSUserDefaults based on the original URL string used to request it
 - (void)cacheForecast:(id)forecast withURLString:(NSString *)urlString
 {
+#ifndef NDEBUG
+    NSLog(@"Forecastr: Caching item for %@", urlString);
+#endif
+    
     NSMutableDictionary *cachedForecasts = [[userDefaults dictionaryForKey:kFCCacheKey] mutableCopy];
     if (!cachedForecasts) cachedForecasts = [[NSMutableDictionary alloc] initWithCapacity:1];
     
@@ -311,11 +332,9 @@ NSString *const kFCIconHurricane = @"hurricane";
     [newCacheItem setObject:forecast forKey:kFCCacheForecastKey];
     
     // Save the new cache item and sync the user defaults
-    [cachedForecasts setObject:newCacheItem forKey:urlString];
+    [cachedForecasts setObject:[self archivedObject:newCacheItem] forKey:urlString];
     [userDefaults setObject:cachedForecasts forKey:kFCCacheKey];
     [userDefaults synchronize];
-    
-    //NSLog(@"Caching item for %@", urlString);
 }
 
 // Removes a cached forecast in case you want to refresh it prematurely
@@ -326,12 +345,23 @@ NSString *const kFCIconHurricane = @"hurricane";
     
     NSMutableDictionary *cachedForecasts = [[userDefaults dictionaryForKey:kFCCacheKey] mutableCopy];
     if (cachedForecasts) {
-        //NSLog(@"Removing cached item for %@", cacheKey);
+#ifndef NDEBUG
+        NSLog(@"Forecastr: Removing cached item for %@", cacheKey);
+#endif
         [cachedForecasts removeObjectForKey:cacheKey];
         [userDefaults setObject:cachedForecasts forKey:kFCCacheKey];
         [userDefaults synchronize];
     }
+}
 
+// Flushes all forecasts from the cache
+- (void)flushCache
+{
+#ifndef NDEBUG
+    NSLog(@"Forecastr: Flushing the cache...");
+#endif
+    [userDefaults removeObjectForKey:kFCCacheKey];
+    [userDefaults synchronize];
 }
 
 # pragma mark - Cache Private Methods
@@ -343,6 +373,18 @@ NSString *const kFCIconHurricane = @"hurricane";
     NSString *oldLatLon = [NSString stringWithFormat:@"%f,%f", lat, lon];
     NSString *generalizedLatLon = [NSString stringWithFormat:@"%.2f,%.2f", lat, lon];
     return [urlString stringByReplacingOccurrencesOfString:oldLatLon withString:generalizedLatLon];
+}
+
+// Creates an archived object suitable for storing in NSUserDefaults
+- (NSData *)archivedObject:(id)object
+{
+    return object ? [NSKeyedArchiver archivedDataWithRootObject:object] : nil;
+}
+
+// Unarchives an object that was stored as NSData
+- (id)objectForArchive:(NSData *)archivedObject
+{
+    return archivedObject ? [NSKeyedUnarchiver unarchiveObjectWithData:archivedObject] : nil;
 }
 
 @end
