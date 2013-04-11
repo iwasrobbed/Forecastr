@@ -58,6 +58,29 @@ And here is a very basic example:
 * You can change the cache expiration period by setting `forecastr.cacheExpirationInMinutes = 10;` or some other integer value
 * You can remove an old cached item if you want to refresh it prematurely (see basic example app)
 
+## Extras ##
+
+The wrapper has a number of extras so please have a look at all of the source files included with it so you don't duplicate existing work.  For instance, there are constants created for all constant values in the API such as data block / point dictionary key names, weather icon names, unit types, etc.
+
+Additionally, there are a few helper methods that were written to help with UI display of the JSON data:
+
+* `descriptionForPrecipIntensity` will return a human readable description based on the precipitation intensity floating point value
+* `imageNameForWeatherIconType` will return an image name based on the weather icon type specified in the forecast response
+* `messageForError:withResponse:` will try and find the most human readable error description based on the response and then reverts to the error's localized description if nothing else is found
+
+## API Errors ##
+
+There are only two types of error responses: 400 errors (where you provide invalid input, such as an impossible latitude or longitude) or 500 errors (where something unexpected happened on the Forecast.io servers).  Both cases return a JSON object with a string "error" property that can be used to determine the cause of the error. In all other scenarios, an HTTP 200 is returned, but pieces of data may be lacking (even in circumstances of normal operation).  Therefore, you should always check that the properties you intend to use actually exist before using them, and in the event that they are missing, treat it as an error at your discretion.
+
+One simple way of checking if a dictionary key exists is:
+
+```objc
+id temperature = [forecast objectForKey:kFCTemperature];
+self.temperatureLabel.text = temperature ? [NSString stringWithFormat:@"%d°", [temperature intValue]] : @"N/A";
+```
+
+In this example, we simply check if the object is nil and return `N/A` if so, otherwise we return a formatted temperature value.
+
 ## License ##
 
 Essentially, this code is free to use in commercial and non-commercial projects with no attribution necessary.
