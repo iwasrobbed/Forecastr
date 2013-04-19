@@ -30,6 +30,13 @@
  * A common area for changing the names of all constants used in the JSON response
  */
 
+// Error domain & enums
+NSString *const kFCErrorDomain = @"com.forecastr.errors";
+typedef enum {
+    kFCCachedItemNotFound,
+    kFCCacheNotEnabled
+} ForecastrErrorType;
+
 // Cache keys
 NSString *const kFCCacheKey = @"CachedForecasts";
 NSString *const kFCCacheArchiveKey = @"ArchivedForecast";
@@ -104,17 +111,13 @@ NSString *const kFCIconHurricane = @"hurricane";
 @interface Forecastr ()
 {
     NSUserDefaults *userDefaults;
+    
+    NSOperationQueue *forecastrQueue;
+    dispatch_queue_t async_queue;
 }
 @end
 
 @implementation Forecastr
-
-@synthesize apiKey = _apiKey;
-@synthesize units = _units;
-@synthesize callback = _callback;
-
-@synthesize cacheEnabled = _cacheEnabled;
-@synthesize cacheExpirationInMinutes = _cacheExpirationInMinutes;
 
 # pragma mark - Singleton Methods
 
@@ -132,6 +135,14 @@ NSString *const kFCIconHurricane = @"hurricane";
     if (self = [super init]) {
         // Init code here
         userDefaults = [NSUserDefaults standardUserDefaults];
+        
+        // AFNetworking requests queue
+        forecastrQueue = [[NSOperationQueue alloc] init];
+        
+        // Setup the async queue
+        async_queue = dispatch_queue_create("com.forecastr.asyncQueue", NULL);
+        
+        // Caching defaults
         self.cacheEnabled = YES; // Enable cache by default
         self.cacheExpirationInMinutes = 30; // Set default of 30 minutes
     }
@@ -163,40 +174,42 @@ NSString *const kFCIconHurricane = @"hurricane";
 #endif
     
     // Check if we have a valid cache item that hasn't expired for this URL
+    // If caching isn't enabled or a fresh cache item wasn't found, it will execute a server request in the failure block
     NSString *cacheKey = [self cacheKeyForURLString:urlString forLatitude:lat longitude:lon];
-    if (self.cacheEnabled) {
-        id cachedForecast = [self checkForecastCacheForURLString:cacheKey];
-        if (cachedForecast) {
-            success(cachedForecast);
-            return;
+    [self checkForecastCacheForURLString:cacheKey success:^(id cachedForecast) {
+        success(cachedForecast);
+    } failure:^(NSError *error) {
+        // If we got here, cache isn't enabled or we didn't find a valid/unexpired forecast
+        // for this location in cache so let's query the servers for one
+        
+        // Asynchronously kick off the GET request on the API for the generated URL (i.e. not the one used as a cache key)
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:urlString]];
+        if (self.callback) {
+            AFHTTPRequestOperation *httpOperation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+            [httpOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+                NSString *JSONP = [[NSString alloc] initWithData:responseObject encoding:NSASCIIStringEncoding];
+                if (self.cacheEnabled) [self cacheForecast:JSONP withURLString:cacheKey];
+                success(JSONP);
+            } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                failure(error, operation);
+            }];
+            [forecastrQueue addOperation:httpOperation];
+        } else {
+            AFJSONRequestOperation *jsonOperation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+                if (self.cacheEnabled) [self cacheForecast:JSON withURLString:cacheKey];
+                success(JSON);
+            } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
+                failure(error, JSON);
+            }];
+            [forecastrQueue addOperation:jsonOperation];
         }
-    }
-    
-    // If we got here, cache isn't enabled or we didn't find a valid/unexpired forecast
-    // for this location in cache so let's query the servers for one
-    
-    // Asynchronously kick off the GET request on the API for the generated URL (i.e. not the one used as a cache key)
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:urlString]];
-    
-    if (self.callback) {
-        AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-        [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-            NSString *JSONP = [[NSString alloc] initWithData:responseObject encoding:NSASCIIStringEncoding];
-            if (self.cacheEnabled) [self cacheForecast:JSONP withURLString:cacheKey];
-            success(JSONP);
-        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            failure(error, operation);
-        }];
-        [operation start];
-    } else {
-        AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-            if (self.cacheEnabled) [self cacheForecast:JSON withURLString:cacheKey];
-            success(JSON);
-        } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
-            failure(error, JSON);
-        }];
-        [operation start];
-    }
+    }];
+}
+
+// Cancels all requests that are currently being executed
+- (void)cancelAllForecastRequests
+{
+    [forecastrQueue cancelAllOperations];
 }
 
 // Returns a description based on the precicipation intensity
@@ -279,39 +292,61 @@ NSString *const kFCIconHurricane = @"hurricane";
 # pragma mark - Cache Instance Methods
 
 // Checks the NSUserDefaults for a cached forecast that is still fresh
-- (id)checkForecastCacheForURLString:(NSString *)urlString
+- (void)checkForecastCacheForURLString:(NSString *)urlString
+                               success:(void (^)(id cachedForecast))success
+                               failure:(void (^)(NSError *error))failure
 {
-    @try {
-        NSDictionary *cachedForecasts = [userDefaults dictionaryForKey:kFCCacheKey];
-        if (cachedForecasts) {
-            // Create an NSString object from the coordinates as the dictionary key
-            NSData *archivedCacheItem = [cachedForecasts objectForKey:urlString];
-            // Check if the forecast exists and hasn't expired yet
-            if (archivedCacheItem) {
-                NSDictionary *cacheItem = [self objectForArchive:archivedCacheItem];
-                if (cacheItem) {
-                    NSDate *expirationTime = (NSDate *)[cacheItem objectForKey:kFCCacheExpiresKey];
-                    NSDate *rightNow = [NSDate date];
-                    if ([rightNow compare:expirationTime] == NSOrderedAscending) {
+    if (self.cacheEnabled) {
+        
+        //  Perform this on a background thread
+        dispatch_async(async_queue, ^{
+            BOOL cachedItemWasFound = NO;
+            @try {
+                NSDictionary *cachedForecasts = [userDefaults dictionaryForKey:kFCCacheKey];
+                if (cachedForecasts) {
+                    // Create an NSString object from the coordinates as the dictionary key
+                    NSData *archivedCacheItem = [cachedForecasts objectForKey:urlString];
+                    // Check if the forecast exists and hasn't expired yet
+                    if (archivedCacheItem) {
+                        NSDictionary *cacheItem = [self objectForArchive:archivedCacheItem];
+                        if (cacheItem) {
+                            NSDate *expirationTime = (NSDate *)[cacheItem objectForKey:kFCCacheExpiresKey];
+                            NSDate *rightNow = [NSDate date];
+                            if ([rightNow compare:expirationTime] == NSOrderedAscending) {
 #ifndef NDEBUG
-                        NSLog(@"Forecastr: Found cached item for %@", urlString);
+                                NSLog(@"Forecastr: Found cached item for %@", urlString);
 #endif
-                        // Cache item is still fresh
-                        return [cacheItem objectForKey:kFCCacheForecastKey];
+                                cachedItemWasFound = YES;
+                                // Cache item is still fresh
+                                dispatch_sync(dispatch_get_main_queue(), ^{
+                                    success([cacheItem objectForKey:kFCCacheForecastKey]);
+                                });
+                                
+                            }
+                            // As a note, there is no need to remove any stale cache item since it will
+                            // be overwritten when the forecast is cached again
+                        }
                     }
-                    // As a note, there is no need to remove any stale cache item since it will
-                    // be overwritten when the forecast is cached again
+                }
+                if (!cachedItemWasFound) {
+                    // If we don't have anything fresh in the cache
+                    dispatch_sync(dispatch_get_main_queue(), ^{
+                        failure([NSError errorWithDomain:kFCErrorDomain code:kFCCachedItemNotFound userInfo:nil]);
+                    });
                 }
             }
-        }
-        // If we don't have anything fresh in the cache
-        return nil;
-    }
-    @catch (NSException *exception) {
+            @catch (NSException *exception) {
 #ifndef NDEBUG
-        NSLog(@"Forecastr: Caught an exception while reading from cache (%@)", exception);
+                NSLog(@"Forecastr: Caught an exception while reading from cache (%@)", exception);
 #endif
-        return nil;
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    failure([NSError errorWithDomain:kFCErrorDomain code:kFCCachedItemNotFound userInfo:nil]);
+                });
+            }
+        });
+        
+    } else {
+        failure([NSError errorWithDomain:kFCErrorDomain code:kFCCacheNotEnabled userInfo:nil]);
     }
 }
 
@@ -322,19 +357,22 @@ NSString *const kFCIconHurricane = @"hurricane";
     NSLog(@"Forecastr: Caching item for %@", urlString);
 #endif
     
-    NSMutableDictionary *cachedForecasts = [[userDefaults dictionaryForKey:kFCCacheKey] mutableCopy];
-    if (!cachedForecasts) cachedForecasts = [[NSMutableDictionary alloc] initWithCapacity:1];
-    
-    // Set up the new dictionary we are going to cache
-    NSDate *expirationDate = [[NSDate date] dateByAddingTimeInterval:self.cacheExpirationInMinutes * 60]; // X minutes from now
-    NSMutableDictionary *newCacheItem = [[NSMutableDictionary alloc] initWithCapacity:2];
-    [newCacheItem setObject:expirationDate forKey:kFCCacheExpiresKey];
-    [newCacheItem setObject:forecast forKey:kFCCacheForecastKey];
-    
-    // Save the new cache item and sync the user defaults
-    [cachedForecasts setObject:[self archivedObject:newCacheItem] forKey:urlString];
-    [userDefaults setObject:cachedForecasts forKey:kFCCacheKey];
-    [userDefaults synchronize];
+    // Save to cache on a background thread
+    dispatch_async(async_queue, ^{
+        NSMutableDictionary *cachedForecasts = [[userDefaults dictionaryForKey:kFCCacheKey] mutableCopy];
+        if (!cachedForecasts) cachedForecasts = [[NSMutableDictionary alloc] initWithCapacity:1];
+        
+        // Set up the new dictionary we are going to cache
+        NSDate *expirationDate = [[NSDate date] dateByAddingTimeInterval:self.cacheExpirationInMinutes * 60]; // X minutes from now
+        NSMutableDictionary *newCacheItem = [[NSMutableDictionary alloc] initWithCapacity:2];
+        [newCacheItem setObject:expirationDate forKey:kFCCacheExpiresKey];
+        [newCacheItem setObject:forecast forKey:kFCCacheForecastKey];
+        
+        // Save the new cache item and sync the user defaults
+        [cachedForecasts setObject:[self archivedObject:newCacheItem] forKey:urlString];
+        [userDefaults setObject:cachedForecasts forKey:kFCCacheKey];
+        [userDefaults synchronize];
+    });
 }
 
 // Removes a cached forecast in case you want to refresh it prematurely

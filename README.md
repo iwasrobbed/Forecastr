@@ -44,10 +44,11 @@ And here is a very basic example:
 ```
 
 ## Supports ##
-* Basic caching of the requests based on the URL used to make the request.  This is to prevent unnecessary data usage and round trips to Forecast.io
+* Basic, asynchronous caching of the requests based on the URL used to make the request.  This is to prevent unnecessary data usage and round trips to Forecast.io
 * Specifying `US`, `SI`, or `UK` units
 * Specifying a JSONP callback method name (e.g. `someJavascriptMethodName({jsonResponseGoesHere})`)
 * Specifying exclusions in the response (e.g. leaving out `currently`, `minutely`, `hourly`, `daily`, `alerts`, or `flags`)
+* Canceling any existing forecast requests with `[forecastr cancelAllForecastRequests];`
 
 ## Options ##
 * If you want to use a `CLLocation` object instead of pure latitude/longitude, import `Forecastr+CLLocation.h` instead of `Forecastr.h`

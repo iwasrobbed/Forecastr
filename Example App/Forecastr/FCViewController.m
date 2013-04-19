@@ -98,7 +98,7 @@ static double kDemoDateTime = 1364991687; // EPOCH time
 // Currently, the exclusions can be: currently, minutely, hourly, daily, alerts, flags
 - (void)forecastWithExclusions
 {
-    NSArray *tmpExclusions = [NSArray arrayWithObjects:kFCAlerts, kFCFlags, kFCMinutelyForecast, kFCHourlyForecast, kFCDailyForecast, nil];
+    NSArray *tmpExclusions = @[kFCAlerts, kFCFlags, kFCMinutelyForecast, kFCHourlyForecast, kFCDailyForecast];
     [forecastr getForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:tmpExclusions success:^(id JSON) {
         NSLog(@"JSON Response (w/ exclusions: %@) was: %@", tmpExclusions, JSON);
     } failure:^(NSError *error, id response) {
@@ -111,7 +111,7 @@ static double kDemoDateTime = 1364991687; // EPOCH time
 {
     forecastr.units = kFCSIUnits;
     forecastr.callback = @"someJavascriptFunctionName";
-    NSArray *tmpExclusions = [NSArray arrayWithObjects:kFCAlerts, kFCFlags, kFCMinutelyForecast, kFCHourlyForecast, kFCDailyForecast, nil];
+    NSArray *tmpExclusions = @[kFCAlerts, kFCFlags, kFCMinutelyForecast, kFCHourlyForecast, kFCDailyForecast];
     [forecastr getForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:tmpExclusions success:^(id JSON) {
         NSLog(@"JSON Response (w/ SI units, JSONP callback, and exclusions: %@) was: %@", tmpExclusions, JSON);
     } failure:^(NSError *error, id response) {

@@ -135,6 +135,11 @@ extern NSString *const kFCIconHurricane;
                        failure:(void (^)(NSError *error, id response))failure;
 
 /**
+ * Cancels all requests that are currently being executed
+ */
+- (void)cancelAllForecastRequests;
+
+/**
  * Returns a description based on the precicipation intensity
  *
  * @param precipIntensity The precipIntensity for the acquired forecast data
@@ -161,15 +166,17 @@ extern NSString *const kFCIconHurricane;
  * This will save us round trips and usage for the Forecast.io servers
  * self.cacheEnabled is YES by default, but you can disable it for testing or if you don't want to use it
  *
- * @return The JSON or JSONP response if found and still fresh, otherwise nil 
+ * @return The JSON or JSONP response if found and still fresh, otherwise an NSError (that you can ignore) 
  *
  * @param forecast The returned JSON or JSONP for the forecast you wish to cache
  * @param urlString The original URL string used to make the request (this assumes your API key doesn't change)
  */
-- (id)checkForecastCacheForURLString:(NSString *)urlString;
+- (void)checkForecastCacheForURLString:(NSString *)urlString
+                               success:(void (^)(id cachedForecast))success
+                               failure:(void (^)(NSError *error))failure;
 
 /**
- * Caches a forecast in NSUserDefaults based on the original URL string used to request it
+ * Caches a forecast, on a background thread, in NSUserDefaults based on the original URL string used to request it
  *
  * @param forecast The returned JSON or JSONP for the forecast you wish to cache
  * @param urlString The original URL string used to make the request (this assumes your API key doesn't change)
