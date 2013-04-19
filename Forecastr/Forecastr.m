@@ -26,10 +26,6 @@
 #import "Forecastr.h"
 #import "AFNetworking.h"
 
-/**
- * A common area for changing the names of all constants used in the JSON response
- */
-
 // Error domain & enums
 NSString *const kFCErrorDomain = @"com.forecastr.errors";
 typedef enum {
@@ -43,6 +39,10 @@ NSString *const kFCCacheArchiveKey = @"ArchivedForecast";
 NSString *const kFCCacheExpiresKey = @"ExpiresAt";
 NSString *const kFCCacheForecastKey = @"Forecast";
 NSString *const kFCCacheJSONPKey = @"JSONP";
+
+/**
+ * A common area for changing the names of all constants used in the JSON response
+ */
 
 // Unit types
 NSString *const kFCUSUnits = @"us";
