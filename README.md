@@ -58,6 +58,7 @@ And here is a very basic example:
 * You can disable cache by setting `forecastr.cacheEnabled = NO;` 
 * You can change the cache expiration period by setting `forecastr.cacheExpirationInMinutes = 10;` or some other integer value
 * You can remove an old cached item if you want to refresh it prematurely (see basic example app)
+* You can flush all items from the cache with `[forecastr flushCache];`
 
 ## Extras ##
 
