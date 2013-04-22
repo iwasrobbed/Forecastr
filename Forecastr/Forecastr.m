@@ -44,6 +44,9 @@ NSString *const kFCCacheJSONPKey = @"JSONP";
  * A common area for changing the names of all constants used in the JSON response
  */
 
+// Base URL to the API
+NSString *const kFCBaseURLString = @"https://api.forecast.io/forecast";
+
 // Unit types
 NSString *const kFCUSUnits = @"us";
 NSString *const kFCSIUnits = @"si";
@@ -113,6 +116,7 @@ NSString *const kFCIconHurricane = @"hurricane";
     NSUserDefaults *userDefaults;
     
     NSOperationQueue *forecastrQueue;
+    NSMutableSet *pendingRequests;
     dispatch_queue_t async_queue;
 }
 @end
@@ -136,8 +140,9 @@ NSString *const kFCIconHurricane = @"hurricane";
         // Init code here
         userDefaults = [NSUserDefaults standardUserDefaults];
         
-        // AFNetworking requests queue
+        // AFNetworking request queues
         forecastrQueue = [[NSOperationQueue alloc] init];
+        pendingRequests = [[NSMutableSet alloc] init];
         
         // Setup the async queue
         async_queue = dispatch_queue_create("com.forecastr.asyncQueue", NULL);
@@ -147,10 +152,6 @@ NSString *const kFCIconHurricane = @"hurricane";
         self.cacheExpirationInMinutes = 30; // Set default of 30 minutes
     }
     return self;
-}
-
-- (void)dealloc {
-    // Should never be called, but just here for clarity really.
 }
 
 # pragma mark - Instance Methods
@@ -193,6 +194,7 @@ NSString *const kFCIconHurricane = @"hurricane";
             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                 failure(error, operation);
             }];
+            [pendingRequests addObject:httpOperation];
             [forecastrQueue addOperation:httpOperation];
         } else {
             AFJSONRequestOperation *jsonOperation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
@@ -201,15 +203,24 @@ NSString *const kFCIconHurricane = @"hurricane";
             } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
                 failure(error, JSON);
             }];
+            [pendingRequests addObject:jsonOperation];
             [forecastrQueue addOperation:jsonOperation];
         }
     }];
 }
 
-// Cancels all requests that are currently being executed
+// Cancels all requests that are currently queued or being executed
 - (void)cancelAllForecastRequests
 {
+    // Cancel any that are in the operations queue
     [forecastrQueue cancelAllOperations];
+    
+    // Cancel any in progress (i.e. some subclass of AFHTTPRequestOperation)
+    for (id requestOperation in pendingRequests) {
+        if ([requestOperation respondsToSelector:@selector(cancel)])
+            [requestOperation cancel];
+    }
+    [pendingRequests removeAllObjects];
 }
 
 // Returns a description based on the precicipation intensity
@@ -271,7 +282,7 @@ NSString *const kFCIconHurricane = @"hurricane";
 // Generates a URL string for the given options
 - (NSString *)urlStringforLatitude:(double)lat longitude:(double)lon time:(NSNumber *)time exclusions:(NSArray *)exclusions
 {
-    NSString *urlString = [NSString stringWithFormat:@"https://api.forecast.io/forecast/%@/%.6f,%.6f", self.apiKey, lat, lon];
+    NSString *urlString = [NSString stringWithFormat:@"%@/%@/%.6f,%.6f", kFCBaseURLString, self.apiKey, lat, lon];
     if (time) urlString = [urlString stringByAppendingFormat:@",%.0f", [time doubleValue]];
     if (exclusions) urlString = [urlString stringByAppendingFormat:@"?exclude=%@", [self stringForExclusions:exclusions]];
     if (self.units) urlString = [urlString stringByAppendingFormat:@"%@units=%@", exclusions ? @"&" : @"?", self.units];
