@@ -156,7 +156,7 @@ NSString *const kFCIconHurricane = @"hurricane";
 
 # pragma mark - Instance Methods
 
-// Requests the specified forecast for the given location and optional time
+// Deprecated method
 - (void)getForecastForLatitude:(double)lat
                      longitude:(double)lon
                           time:(NSNumber *)time
@@ -164,11 +164,23 @@ NSString *const kFCIconHurricane = @"hurricane";
                        success:(void (^)(id JSON))success
                        failure:(void (^)(NSError *error, id response))failure
 {
+  [self getForecastForLatitude:lat longitude:lon time:time exclusions:exclusions extend:nil success:success failure:failure];
+}
+
+// Requests the specified forecast for the given location and optional time
+- (void)getForecastForLatitude:(double)lat
+                     longitude:(double)lon
+                          time:(NSNumber *)time
+                    exclusions:(NSArray *)exclusions
+                        extend:(NSString*)extendCommand
+                       success:(void (^)(id JSON))success
+                       failure:(void (^)(NSError *error, id response))failure
+{
     // Check if we have an API key set
     [self checkForAPIKey];
     
     // Generate the URL string based on the passed in params
-    NSString *urlString = [self urlStringforLatitude:lat longitude:lon time:time exclusions:exclusions];
+    NSString *urlString = [self urlStringforLatitude:lat longitude:lon time:time exclusions:exclusions extend:(NSString*)extendCommand];
     
 #ifndef NDEBUG
     NSLog(@"Forecastr: Checking forecast for %@", urlString);
@@ -280,13 +292,14 @@ NSString *const kFCIconHurricane = @"hurricane";
 }
 
 // Generates a URL string for the given options
-- (NSString *)urlStringforLatitude:(double)lat longitude:(double)lon time:(NSNumber *)time exclusions:(NSArray *)exclusions
+- (NSString *)urlStringforLatitude:(double)lat longitude:(double)lon time:(NSNumber *)time exclusions:(NSArray *)exclusions extend:(NSString*)extendCommand
 {
     NSString *urlString = [NSString stringWithFormat:@"%@/%@/%.6f,%.6f", kFCBaseURLString, self.apiKey, lat, lon];
     if (time) urlString = [urlString stringByAppendingFormat:@",%.0f", [time doubleValue]];
     if (exclusions) urlString = [urlString stringByAppendingFormat:@"?exclude=%@", [self stringForExclusions:exclusions]];
-    if (self.units) urlString = [urlString stringByAppendingFormat:@"%@units=%@", exclusions ? @"&" : @"?", self.units];
-    if (self.callback) urlString = [urlString stringByAppendingFormat:@"%@callback=%@", (exclusions || self.units) ? @"&" : @"?", self.callback];
+    if (extendCommand) urlString = [urlString stringByAppendingFormat:@"%@extend=%@", exclusions ? @"&" : @"?", extendCommand];
+    if (self.units) urlString = [urlString stringByAppendingFormat:@"%@units=%@", (exclusions || extendCommand) ? @"&" : @"?", self.units];
+    if (self.callback) urlString = [urlString stringByAppendingFormat:@"%@callback=%@", (exclusions || self.units || extendCommand) ? @"&" : @"?", self.callback];
     return urlString;
 }
 
@@ -386,10 +399,16 @@ NSString *const kFCIconHurricane = @"hurricane";
     });
 }
 
-// Removes a cached forecast in case you want to refresh it prematurely
+// Deprecated method
 - (void)removeCachedForecastForLatitude:(double)lat longitude:(double)lon time:(NSNumber *)time exclusions:(NSArray *)exclusions
 {
-    NSString *urlString = [self urlStringforLatitude:lat longitude:lon time:time exclusions:exclusions];
+  [self removeCachedForecastForLatitude:lat longitude:lon time:time exclusions:exclusions extend:nil];
+}
+
+// Removes a cached forecast in case you want to refresh it prematurely
+- (void)removeCachedForecastForLatitude:(double)lat longitude:(double)lon time:(NSNumber *)time exclusions:(NSArray *)exclusions extend:(NSString*)extendCommand
+{
+    NSString *urlString = [self urlStringforLatitude:lat longitude:lon time:time exclusions:exclusions extend:extendCommand];
     NSString *cacheKey = [self cacheKeyForURLString:urlString forLatitude:lat longitude:lon];
     
     NSMutableDictionary *cachedForecasts = [[userDefaults dictionaryForKey:kFCCacheKey] mutableCopy];
