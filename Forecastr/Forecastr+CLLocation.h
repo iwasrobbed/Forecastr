@@ -45,8 +45,16 @@
 - (void)getForecastForLocation:(CLLocation *)location
                           time:(NSNumber *)time
                     exclusions:(NSArray *)exclusions
+                        extend:(NSString*)extendCommand
                        success:(void (^)(id JSON))success
                        failure:(void (^)(NSError *error, id response))failure;
+
+- (void)getForecastForLocation:(CLLocation *)location
+                          time:(NSNumber *)time
+                    exclusions:(NSArray *)exclusions
+                       success:(void (^)(id JSON))success
+                       failure:(void (^)(NSError *error, id response))failure DEPRECATED_ATTRIBUTE;
+
 
 /**
  * Removes a cached forecast in case you want to refresh it prematurely
@@ -56,6 +64,8 @@
  * @param time (Optional) The desired time of the forecast in UNIX GMT format
  * @param exclusions (Optional) An array which specifies which data blocks you would like left off the response
  */
-- (void)removeCachedForecastForLocation:(CLLocation *)location time:(NSNumber *)time exclusions:(NSArray *)exclusions;
+- (void)removeCachedForecastForLocation:(CLLocation *)location time:(NSNumber *)time exclusions:(NSArray *)exclusions extend:(NSString*)extendCommand;
+
+- (void)removeCachedForecastForLocation:(CLLocation *)location time:(NSNumber *)time exclusions:(NSArray *)exclusions DEPRECATED_ATTRIBUTE;
 
 @end

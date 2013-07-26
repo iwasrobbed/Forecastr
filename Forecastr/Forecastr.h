@@ -112,6 +112,7 @@ extern NSString *const kFCIconHurricane;
 
 + (id)sharedManager;
 
+
 /**
  * Requests the forecast for the given location and optional time and/or exclusions
  *
@@ -131,6 +132,30 @@ extern NSString *const kFCIconHurricane;
                      longitude:(double)lon
                           time:(NSNumber *)time
                     exclusions:(NSArray *)exclusions
+                       success:(void (^)(id JSON))success
+                       failure:(void (^)(NSError *error, id response))failure DEPRECATED_ATTRIBUTE;
+
+/**
+ * Requests the forecast for the given location and optional time and/or exclusions
+ *
+ * @return The JSON response
+ *
+ * @param lat The latitude of the location.
+ * @param long The longitude of the location.
+ * @param time (Optional) The desired time of the forecast in UNIX GMT format
+ * @param exclusions (Optional) An array which specifies which data blocks you would like left off the response
+ * @param extend (Optional) Extra commands that are sent to the server
+ * @param success A block object to be executed when the operation finishes successfully.
+ * @param failure A block object to be executed when the operation finishes unsuccessfully.
+ *
+ * @discussion For many locations, it can be 60 years in the past to 10 years in the future.
+ */
+
+- (void)getForecastForLatitude:(double)lat
+                     longitude:(double)lon
+                          time:(NSNumber *)time
+                    exclusions:(NSArray *)exclusions
+                        extend:(NSString*)extendCommand
                        success:(void (^)(id JSON))success
                        failure:(void (^)(NSError *error, id response))failure;
 
@@ -192,7 +217,26 @@ extern NSString *const kFCIconHurricane;
  * @param time (Optional) The desired time of the forecast in UNIX GMT format
  * @param exclusions (Optional) An array which specifies which data blocks you would like left off the response
  */
-- (void)removeCachedForecastForLatitude:(double)lat longitude:(double)lon time:(NSNumber *)time exclusions:(NSArray *)exclusions;
+- (void)removeCachedForecastForLatitude:(double)lat
+                              longitude:(double)lon
+                                   time:(NSNumber *)time
+                             exclusions:(NSArray *)exclusions DEPRECATED_ATTRIBUTE;
+
+/**
+ * Removes a cached forecast in case you want to refresh it prematurely
+ * Make sure you pass in the exact same params that you used in the original request
+ *
+ * @param lat The latitude of the location.
+ * @param long The longitude of the location.
+ * @param time (Optional) The desired time of the forecast in UNIX GMT format
+ * @param exclusions (Optional) An array which specifies which data blocks you would like left off the response
+ * @param extend (Optional) Extra commands that are sent to the server
+ */
+- (void)removeCachedForecastForLatitude:(double)lat
+                              longitude:(double)lon
+                                   time:(NSNumber *)time
+                             exclusions:(NSArray *)exclusions
+                                 extend:(NSString*)extendCommand;
 
 /**
  * Flushes all forecasts from the cache

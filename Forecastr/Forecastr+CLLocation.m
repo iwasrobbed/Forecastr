@@ -31,28 +31,46 @@
 - (void)getForecastForLocation:(CLLocation *)location
                           time:(NSNumber *)time
                     exclusions:(NSArray *)exclusions
+                        extend:(NSString*)extendCommand
                        success:(void (^)(id JSON))success
                        failure:(void (^)(NSError *error, id response))failure
 {
     float latitude = location.coordinate.latitude;
     float longitude = location.coordinate.longitude;
     
-    [self getForecastForLatitude:latitude longitude:longitude time:time exclusions:exclusions success:^(id JSON) {
+  [self getForecastForLatitude:latitude longitude:longitude time:time exclusions:exclusions extend:extendCommand success:^(id JSON) {
         success(JSON);
     } failure:^(NSError *error, id response) {
         failure(error, response);
     }];
 }
 
+- (void)getForecastForLocation:(CLLocation *)location
+                          time:(NSNumber *)time
+                    exclusions:(NSArray *)exclusions
+                       success:(void (^)(id JSON))success
+                       failure:(void (^)(NSError *error, id response))failure
+{
+  [self getForecastForLocation:location time:time exclusions:exclusions extend:nil success:success failure:failure];
+}
+
 // Removes a cached forecast in case you want to refresh it prematurely
 - (void)removeCachedForecastForLocation:(CLLocation *)location
                                    time:(NSNumber *)time
                              exclusions:(NSArray *)exclusions
+                                 extend:(NSString*)extendCommand
 {
     float latitude = location.coordinate.latitude;
     float longitude = location.coordinate.longitude;
     
-    [self removeCachedForecastForLatitude:latitude longitude:longitude time:time exclusions:exclusions];
+    [self removeCachedForecastForLatitude:latitude longitude:longitude time:time exclusions:exclusions extend:extendCommand];
+}
+
+- (void)removeCachedForecastForLocation:(CLLocation *)location
+                                   time:(NSNumber *)time
+                             exclusions:(NSArray *)exclusions
+{
+  [self removeCachedForecastForLocation:location time:time exclusions:exclusions extend:nil];
 }
 
 @end
