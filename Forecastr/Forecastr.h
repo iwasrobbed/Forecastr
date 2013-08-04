@@ -25,6 +25,8 @@
 
 #import <Foundation/Foundation.h>
 
+// Updated to match the Forecast.io API as of August 4, 2013
+
 // Cache keys
 extern NSString *const kFCCacheKey;
 extern NSString *const kFCCacheArchiveKey;
@@ -35,6 +37,11 @@ extern NSString *const kFCCacheForecastKey;
 extern NSString *const kFCUSUnits;
 extern NSString *const kFCSIUnits;
 extern NSString *const kFCUKUnits;
+extern NSString *const kFCCAUnits;
+extern NSString *const kFCAutoUnits;
+
+// Extend types
+extern NSString *const kFCExtendHourly;
 
 // Forecast names used for the data block hash keys
 extern NSString *const kFCCurrentlyForecast;
@@ -53,11 +60,15 @@ extern NSString *const kFCTimezone;
 // Names used for the data point hash keys
 extern NSString *const kFCCloudCover;
 extern NSString *const kFCCloudCoverError;
+extern NSString *const kFCDewPoint;
 extern NSString *const kFCHumidity;
 extern NSString *const kFCHumidityError;
 extern NSString *const kFCIcon;
+extern NSString *const kFCOzone;
 extern NSString *const kFCPrecipAccumulation;
 extern NSString *const kFCPrecipIntensity;
+extern NSString *const kFCPrecipIntensityMax;
+extern NSString *const kFCPrecipIntensityMaxTime;
 extern NSString *const kFCPrecipProbability;
 extern NSString *const kFCPrecipType;
 extern NSString *const kFCPressure;

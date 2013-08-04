@@ -51,6 +51,11 @@ NSString *const kFCBaseURLString = @"https://api.forecast.io/forecast";
 NSString *const kFCUSUnits = @"us";
 NSString *const kFCSIUnits = @"si";
 NSString *const kFCUKUnits = @"uk";
+NSString *const kFCCAUnits = @"ca";
+NSString *const kFCAutoUnits = @"auto";
+
+// Extend types
+NSString *const kFCExtendHourly = @"hourly";
 
 // Forecast names used for the data block hash keys
 NSString *const kFCCurrentlyForecast = @"currently";
@@ -69,11 +74,15 @@ NSString *const kFCTimezone = @"timezone";
 // Names used for the data point hash keys
 NSString *const kFCCloudCover = @"cloudCover";
 NSString *const kFCCloudCoverError = @"cloudCoverError";
+NSString *const kFCDewPoint = @"dewPoint";
 NSString *const kFCHumidity = @"humidity";
 NSString *const kFCHumidityError = @"humidityError";
 NSString *const kFCIcon = @"icon";
+NSString *const kFCOzone = @"ozone";
 NSString *const kFCPrecipAccumulation = @"precipAccumulation";
 NSString *const kFCPrecipIntensity = @"precipIntensity";
+NSString *const kFCPrecipIntensityMax = @"precipIntensityMax";
+NSString *const kFCPrecipIntensityMaxTime = @"precipIntensityMaxTime";
 NSString *const kFCPrecipProbability = @"precipProbability";
 NSString *const kFCPrecipType = @"precipType";
 NSString *const kFCPressure = @"pressure";

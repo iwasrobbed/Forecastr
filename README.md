@@ -5,6 +5,8 @@ A simple Objective-C wrapper to make asynchronous requests to the [Forecast.io A
 
 **Note:** You will need to [request an API key](https://developer.forecast.io) and set that key when you first instantiate Forecastr, otherwise an exception will be thrown.
 
+**Updated to match the Forecast.io API as of August 4, 2013**
+
 ## Quick Examples ##
 
 The code base comes with two examples:
@@ -33,7 +35,7 @@ And here is a very basic example:
     forecastr = [Forecastr sharedManager];
     forecastr.apiKey = @""; // You will need to set the API key here (only set it once in the entire app)
 
-    [forecastr getForecastForLatitude:45.5081 longitude:-73.5550 time:nil exclusions:nil success:^(id JSON) {
+    [forecastr getForecastForLatitude:45.5081 longitude:-73.5550 time:nil exclusions:nil extend:nil success:^(id JSON) {
         NSLog(@"JSON Response was: %@", JSON);
     } failure:^(NSError *error, id response) {
         NSLog(@"Error while retrieving forecast: %@", [forecastr messageForError:error withResponse:response]);
@@ -45,10 +47,11 @@ And here is a very basic example:
 
 ## Supports ##
 * Basic, asynchronous caching of the requests based on the URL used to make the request.  This is to prevent unnecessary data usage and round trips to Forecast.io
-* Specifying `US`, `SI`, or `UK` units
+* Specifying `US`, `SI`, `UK`, or `CA` units
 * Specifying a JSONP callback method name (e.g. `someJavascriptMethodName({jsonResponseGoesHere})`)
 * Specifying exclusions in the response (e.g. leaving out `currently`, `minutely`, `hourly`, `daily`, `alerts`, or `flags`)
 * Canceling any existing forecast requests with `[forecastr cancelAllForecastRequests];`
+* Specifying `extend` hourly options to return hourly data for the next seven days rather than the next two
 
 ## Options ##
 * If you want to use a `CLLocation` object instead of pure latitude/longitude, import `Forecastr+CLLocation.h` instead of `Forecastr.h`
