@@ -91,3 +91,12 @@ In this example, we simply check if the object is nil and return `N/A` if so, ot
 Essentially, this code is free to use in commercial and non-commercial projects with no attribution necessary.
 
 See the `LICENSE` file for more details.
+
+## Thank You ##
+
+A huge thank you to the following people for helping me improve and maintain Forecastr:  
+
+* [Mark Rickert](https://github.com/markrickert)
+* [Richard Fung](https://github.com/rhfung)
+
+If you'd like to help, please submit a pull request with tested code and update any examples that your code might affect.
