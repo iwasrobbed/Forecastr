@@ -72,12 +72,15 @@ static double kDemoDateTime = 1364991687; // EPOCH time
     
     // Remove a cached item prematurely (before it expires)
     [self removeCachedItemPrematurely];
+    
+    // Kick off asking for weather with extended hourly option
+    [self forecastWithExtendHourly];
 }
 
 // Kick off asking for weather data for Montreal on 2013-04-03 12:21:27 +0000
 - (void)forecastWithTime
 {
-    [forecastr getForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:[NSNumber numberWithDouble:kDemoDateTime] exclusions:nil success:^(id JSON) {
+    [forecastr getForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:[NSNumber numberWithDouble:kDemoDateTime] exclusions:nil extend:nil success:^(id JSON) {
         NSLog(@"JSON Response (for %@) was: %@", [NSDate dateWithTimeIntervalSince1970:kDemoDateTime], JSON);
     } failure:^(NSError *error, id response) {
         NSLog(@"Error while retrieving forecast: %@", [forecastr messageForError:error withResponse:response]);
@@ -87,7 +90,7 @@ static double kDemoDateTime = 1364991687; // EPOCH time
 // Kick off asking for weather without specifying a time
 - (void)forecastWithoutTime
 {
-    [forecastr getForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:nil success:^(id JSON) {
+    [forecastr getForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:nil extend:nil success:^(id JSON) {
         NSLog(@"JSON Response was: %@", JSON);
     } failure:^(NSError *error, id response) {
         NSLog(@"Error while retrieving forecast: %@", [forecastr messageForError:error withResponse:response]);
@@ -99,7 +102,7 @@ static double kDemoDateTime = 1364991687; // EPOCH time
 - (void)forecastWithExclusions
 {
     NSArray *tmpExclusions = @[kFCAlerts, kFCFlags, kFCMinutelyForecast, kFCHourlyForecast, kFCDailyForecast];
-    [forecastr getForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:tmpExclusions success:^(id JSON) {
+    [forecastr getForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:tmpExclusions extend:nil success:^(id JSON) {
         NSLog(@"JSON Response (w/ exclusions: %@) was: %@", tmpExclusions, JSON);
     } failure:^(NSError *error, id response) {
         NSLog(@"Error while retrieving forecast: %@", [forecastr messageForError:error withResponse:response]);
@@ -112,17 +115,18 @@ static double kDemoDateTime = 1364991687; // EPOCH time
     forecastr.units = kFCSIUnits;
     forecastr.callback = @"someJavascriptFunctionName";
     NSArray *tmpExclusions = @[kFCAlerts, kFCFlags, kFCMinutelyForecast, kFCHourlyForecast, kFCDailyForecast];
-    [forecastr getForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:tmpExclusions success:^(id JSON) {
+    [forecastr getForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:tmpExclusions extend:nil success:^(id JSON) {
         NSLog(@"JSON Response (w/ SI units, JSONP callback, and exclusions: %@) was: %@", tmpExclusions, JSON);
     } failure:^(NSError *error, id response) {
         NSLog(@"Error while retrieving forecast: %@", [forecastr messageForError:error withResponse:response]);
     }];
+    forecastr.callback = nil;
 }
 
 // Kick off asking for weather for a bad latitude/longitude
 - (void)forecastWithBadInputs
 {
-    [forecastr getForecastForLatitude:999999.99 longitude:999999.99 time:nil exclusions:nil success:^(id JSON) {
+    [forecastr getForecastForLatitude:999999.99 longitude:999999.99 time:nil exclusions:nil extend:nil success:^(id JSON) {
         // It won't be successful
     } failure:^(NSError *error, id response) {
         NSLog(@"Error while retrieving forecast (don't worry, we forced this error on purpose): %@", [forecastr messageForError:error withResponse:response]);
@@ -134,7 +138,17 @@ static double kDemoDateTime = 1364991687; // EPOCH time
 {
     // We will be removing the item that was cached in the `forecastWithoutTime` method
     // You might have to run this app twice for it to be cached first (since the requests are async)
-    [forecastr removeCachedForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:nil];
+    [forecastr removeCachedForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:nil extend:nil];
+}
+
+// Kick off asking for weather with extended hourly option
+- (void)forecastWithExtendHourly
+{
+    [forecastr getForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:nil extend:kFCExtendHourly success:^(id JSON) {
+        NSLog(@"JSON Response (w/ extended hourly) was: %@", JSON);
+    } failure:^(NSError *error, id response) {
+        NSLog(@"Error while retrieving forecast: %@", [forecastr messageForError:error withResponse:response]);
+    }];
 }
 
 @end
