@@ -25,6 +25,7 @@
 
 #import "Forecastr.h"
 #import "AFNetworking.h"
+#import "ForecastrAPIClient.h"
 
 // Error domain & enums
 NSString *const kFCErrorDomain = @"com.forecastr.errors";
@@ -43,9 +44,6 @@ NSString *const kFCCacheJSONPKey = @"JSONP";
 /**
  * A common area for changing the names of all constants used in the JSON response
  */
-
-// Base URL to the API
-NSString *const kFCBaseURLString = @"https://api.forecast.io/forecast";
 
 // Unit types
 NSString *const kFCUSUnits = @"us";
@@ -124,8 +122,6 @@ NSString *const kFCIconHurricane = @"hurricane";
 {
     NSUserDefaults *userDefaults;
     
-    NSOperationQueue *forecastrQueue;
-    NSMutableSet *pendingRequests;
     dispatch_queue_t async_queue;
 }
 @end
@@ -148,10 +144,6 @@ NSString *const kFCIconHurricane = @"hurricane";
     if (self = [super init]) {
         // Init code here
         userDefaults = [NSUserDefaults standardUserDefaults];
-        
-        // AFNetworking request queues
-        forecastrQueue = [[NSOperationQueue alloc] init];
-        pendingRequests = [[NSMutableSet alloc] init];
         
         // Setup the async queue
         async_queue = dispatch_queue_create("com.forecastr.asyncQueue", NULL);
@@ -205,27 +197,27 @@ NSString *const kFCIconHurricane = @"hurricane";
         // for this location in cache so let's query the servers for one
         
         // Asynchronously kick off the GET request on the API for the generated URL (i.e. not the one used as a cache key)
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:urlString]];
         if (self.callback) {
-            AFHTTPRequestOperation *httpOperation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-            [httpOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+            
+            [[ForecastrAPIClient sharedClient] GET:urlString parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
                 NSString *JSONP = [[NSString alloc] initWithData:responseObject encoding:NSASCIIStringEncoding];
                 if (self.cacheEnabled) [self cacheForecast:JSONP withURLString:cacheKey];
                 success(JSONP);
-            } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                failure(error, operation);
+            } failure:^(NSURLSessionDataTask *task, NSError *error) {
+                NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
+                failure(error, response);
             }];
-            [pendingRequests addObject:httpOperation];
-            [forecastrQueue addOperation:httpOperation];
+            
         } else {
-            AFJSONRequestOperation *jsonOperation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+            
+            [[ForecastrAPIClient sharedClient] GET:urlString parameters:nil success:^(NSURLSessionDataTask *task, id JSON) {
                 if (self.cacheEnabled) [self cacheForecast:JSON withURLString:cacheKey];
                 success(JSON);
-            } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
-                failure(error, JSON);
+            } failure:^(NSURLSessionDataTask *task, NSError *error) {
+                NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
+                failure(error, response);
             }];
-            [pendingRequests addObject:jsonOperation];
-            [forecastrQueue addOperation:jsonOperation];
+            
         }
     }];
 }
@@ -233,15 +225,11 @@ NSString *const kFCIconHurricane = @"hurricane";
 // Cancels all requests that are currently queued or being executed
 - (void)cancelAllForecastRequests
 {
-    // Cancel any that are in the operations queue
-    [forecastrQueue cancelAllOperations];
-    
-    // Cancel any in progress (i.e. some subclass of AFHTTPRequestOperation)
-    for (id requestOperation in pendingRequests) {
-        if ([requestOperation respondsToSelector:@selector(cancel)])
-            [requestOperation cancel];
+    for (id task in [[ForecastrAPIClient sharedClient] tasks]) {
+        if ([task respondsToSelector:@selector(cancel)]) {
+            [task cancel];
+        }
     }
-    [pendingRequests removeAllObjects];
 }
 
 // Returns a description based on the precicipation intensity
@@ -303,7 +291,7 @@ NSString *const kFCIconHurricane = @"hurricane";
 // Generates a URL string for the given options
 - (NSString *)urlStringforLatitude:(double)lat longitude:(double)lon time:(NSNumber *)time exclusions:(NSArray *)exclusions extend:(NSString*)extendCommand
 {
-    NSString *urlString = [NSString stringWithFormat:@"%@/%@/%.6f,%.6f", kFCBaseURLString, self.apiKey, lat, lon];
+    NSString *urlString = [NSString stringWithFormat:@"%@/%.6f,%.6f", self.apiKey, lat, lon];
     if (time) urlString = [urlString stringByAppendingFormat:@",%.0f", [time doubleValue]];
     if (exclusions) urlString = [urlString stringByAppendingFormat:@"?exclude=%@", [self stringForExclusions:exclusions]];
     if (extendCommand) urlString = [urlString stringByAppendingFormat:@"%@extend=%@", exclusions ? @"&" : @"?", extendCommand];
