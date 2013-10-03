@@ -52,6 +52,7 @@ And here is a very basic example:
 * Specifying exclusions in the response (e.g. leaving out `currently`, `minutely`, `hourly`, `daily`, `alerts`, or `flags`)
 * Canceling any existing forecast requests with `[forecastr cancelAllForecastRequests];`
 * Specifying `extend` hourly options to return hourly data for the next seven days rather than the next two
+* iOS 7+ since it requires AFNetworking 2.0.  Please use one of the previous releases if you need support for iOS 5 or 6 (all releases are tagged)
 
 ## Options ##
 * If you want to use a `CLLocation` object instead of pure latitude/longitude, import `Forecastr+CLLocation.h` instead of `Forecastr.h`
@@ -61,7 +62,7 @@ And here is a very basic example:
 * You can disable cache by setting `forecastr.cacheEnabled = NO;` 
 * You can change the cache expiration period by setting `forecastr.cacheExpirationInMinutes = 10;` or some other integer value
 * You can remove an old cached item if you want to refresh it prematurely (see basic example app)
-* You can flush all items from the cache with `[forecastr flushCache];`
+* You can flush all items from the cache with `[forecastr flushCache];` (might be a good idea to do this every time your app starts)
 
 ## Extras ##
 
@@ -94,9 +95,10 @@ See the `LICENSE` file for more details.
 
 ## Thank You ##
 
-A huge thank you to the following people for helping me improve and maintain Forecastr:  
+A HUGE thank you to the following people for helping me improve and maintain Forecastr:  
 
 * [Mark Rickert](https://github.com/markrickert)
 * [Richard Fung](https://github.com/rhfung)
+* [Matthew Morey](https://github.com/mmorey)
 
-If you'd like to help, please submit a pull request with tested code and update any examples that your code might affect.
+If you'd like to help, please submit a pull request with tested code and please also update any examples that your code might affect.
