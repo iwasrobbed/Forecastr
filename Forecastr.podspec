@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/iwasrobbed/Forecastr.git", :tag => "v0.1" }
   s.platform     = :ios, '7.0'
   s.source_files = 'Forecastr'
-  s.resources = "Forecastr/*.plist"
+  s.resources = "Forecastr/*.plist", "Forecastr/forecast.io.cer"
   s.framework  = 'CoreLocation'
   s.requires_arc = true
   s.dependency 'AFNetworking', '~> 2.0.1'
