@@ -100,5 +100,6 @@ A HUGE thank you to the following people for helping me improve and maintain For
 * [Mark Rickert](https://github.com/markrickert)
 * [Richard Fung](https://github.com/rhfung)
 * [Matthew Morey](https://github.com/mmorey)
+* [Joe](https://github.com/jregan)
 
 If you'd like to help, please submit a pull request with tested code and please also update any examples that your code might affect.
