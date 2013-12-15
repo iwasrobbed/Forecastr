@@ -19,7 +19,6 @@
 		4AD037C017FDA718002FE68D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AD037BF17FDA718002FE68D /* SystemConfiguration.framework */; };
 		4AD037C217FDA748002FE68D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AD037C117FDA748002FE68D /* Security.framework */; };
 		4AD037C517FDB128002FE68D /* ForecastrAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AD037C417FDB128002FE68D /* ForecastrAPIClient.m */; };
-		4AD037C717FDC01C002FE68D /* forecast.io.cer in Resources */ = {isa = PBXBuildFile; fileRef = 4AD037C617FDC01C002FE68D /* forecast.io.cer */; };
 		D452BB7B170C76F900B415CF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D452BB7A170C76F900B415CF /* UIKit.framework */; };
 		D452BB7D170C76F900B415CF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D452BB7C170C76F900B415CF /* Foundation.framework */; };
 		D452BB7F170C76F900B415CF /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D452BB7E170C76F900B415CF /* CoreGraphics.framework */; };
@@ -62,7 +61,6 @@
 		4AD037C117FDA748002FE68D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		4AD037C317FDB128002FE68D /* ForecastrAPIClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ForecastrAPIClient.h; sourceTree = "<group>"; };
 		4AD037C417FDB128002FE68D /* ForecastrAPIClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ForecastrAPIClient.m; sourceTree = "<group>"; };
-		4AD037C617FDC01C002FE68D /* forecast.io.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = forecast.io.cer; sourceTree = "<group>"; };
 		D452BB77170C76F900B415CF /* Forecastr Detailed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Forecastr Detailed.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D452BB7A170C76F900B415CF /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		D452BB7C170C76F900B415CF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -195,7 +193,6 @@
 		D452BBB1170C772800B415CF /* Forecastr */ = {
 			isa = PBXGroup;
 			children = (
-				4AD037C617FDC01C002FE68D /* forecast.io.cer */,
 				D452BBB4170C772800B415CF /* Forecastr.h */,
 				D452BBB5170C772800B415CF /* Forecastr.m */,
 				D452BBB2170C772800B415CF /* Forecastr+CLLocation.h */,
@@ -292,7 +289,6 @@
 				D452BB8F170C76F900B415CF /* Default@2x.png in Resources */,
 				D452BB91170C76F900B415CF /* Default-568h@2x.png in Resources */,
 				D452BB94170C76F900B415CF /* MainStoryboard.storyboard in Resources */,
-				4AD037C717FDC01C002FE68D /* forecast.io.cer in Resources */,
 				D4C6F813170DAF47005E2D75 /* ForecastrUnits.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

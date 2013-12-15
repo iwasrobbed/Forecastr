@@ -18,7 +18,6 @@
 		4AD037E417FDC2B2002FE68D /* AFURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AD037DB17FDC2B2002FE68D /* AFURLSessionManager.m */; };
 		4AD037E617FDC2D6002FE68D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AD037E517FDC2D6002FE68D /* Security.framework */; };
 		4AD037E817FDC2EE002FE68D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AD037E717FDC2EE002FE68D /* SystemConfiguration.framework */; };
-		4AD037EC17FDC309002FE68D /* forecast.io.cer in Resources */ = {isa = PBXBuildFile; fileRef = 4AD037E917FDC309002FE68D /* forecast.io.cer */; };
 		4AD037ED17FDC309002FE68D /* ForecastrAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AD037EB17FDC309002FE68D /* ForecastrAPIClient.m */; };
 		D452BB22170C4F0300B415CF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D452BB21170C4F0200B415CF /* UIKit.framework */; };
 		D452BB24170C4F0300B415CF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D452BB23170C4F0300B415CF /* Foundation.framework */; };
@@ -56,7 +55,6 @@
 		4AD037DB17FDC2B2002FE68D /* AFURLSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLSessionManager.m; sourceTree = "<group>"; };
 		4AD037E517FDC2D6002FE68D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		4AD037E717FDC2EE002FE68D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		4AD037E917FDC309002FE68D /* forecast.io.cer */ = {isa = PBXFileReference; lastKnownFileType = file; name = forecast.io.cer; path = ../Forecastr/forecast.io.cer; sourceTree = "<group>"; };
 		4AD037EA17FDC309002FE68D /* ForecastrAPIClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ForecastrAPIClient.h; path = ../Forecastr/ForecastrAPIClient.h; sourceTree = "<group>"; };
 		4AD037EB17FDC309002FE68D /* ForecastrAPIClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ForecastrAPIClient.m; path = ../Forecastr/ForecastrAPIClient.m; sourceTree = "<group>"; };
 		D452BB1E170C4F0200B415CF /* Forecastr.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Forecastr.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -184,7 +182,6 @@
 		D452BB47170C509300B415CF /* Forecastr */ = {
 			isa = PBXGroup;
 			children = (
-				4AD037E917FDC309002FE68D /* forecast.io.cer */,
 				4AD037EA17FDC309002FE68D /* ForecastrAPIClient.h */,
 				4AD037EB17FDC309002FE68D /* ForecastrAPIClient.m */,
 				D452BB44170C507700B415CF /* Forecastr.h */,
@@ -249,7 +246,6 @@
 				D452BB34170C4F0300B415CF /* Default.png in Resources */,
 				D452BB36170C4F0300B415CF /* Default@2x.png in Resources */,
 				D452BB38170C4F0300B415CF /* Default-568h@2x.png in Resources */,
-				4AD037EC17FDC309002FE68D /* forecast.io.cer in Resources */,
 				D452BB3B170C4F0300B415CF /* MainStoryboard.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -34,7 +34,6 @@ static NSString * const ForecastrAPIBaseURLString = @"https://api.forecast.io/fo
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedClient = [[ForecastrAPIClient alloc] initWithBaseURL:[NSURL URLWithString:ForecastrAPIBaseURLString]];
-        [_sharedClient setSecurityPolicy:[AFSecurityPolicy policyWithPinningMode:AFSSLPinningModePublicKey]];
     });
     
     return _sharedClient;
