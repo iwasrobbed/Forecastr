@@ -95,6 +95,7 @@ NSString *const kFCTemperatureMaxTime = @"temperatureMaxTime";
 NSString *const kFCTemperatureMin = @"temperatureMin";
 NSString *const kFCTemperatureMinError = @"temperatureMinError";
 NSString *const kFCTemperatureMinTime = @"temperatureMinTime";
+NSString *const kFCApparentTemperature = @"apparentTemperature";
 NSString *const kFCTime = @"time";
 NSString *const kFCVisibility = @"visibility";
 NSString *const kFCVisibilityError = @"visibilityError";
@@ -117,6 +118,10 @@ NSString *const kFCIconHail = @"hail";
 NSString *const kFCIconThunderstorm = @"thunderstorm";
 NSString *const kFCIconTornado = @"tornado";
 NSString *const kFCIconHurricane = @"hurricane";
+
+// A numerical value representing the distance to the nearest storm
+NSString *const kFCNearestStormDistance = @"nearestStormDistance";
+NSString *const kFCnearestStormBearing = @"nearestStormBearing";
 
 @interface Forecastr ()
 {
