@@ -25,7 +25,7 @@
 
 #import <Foundation/Foundation.h>
 
-// Updated to match the Forecast.io API as of August 4, 2013
+// Updated to match the Forecast.io API as of December 20, 2013
 
 // Cache keys
 extern NSString *const kFCCacheKey;
@@ -83,6 +83,7 @@ extern NSString *const kFCTemperatureMaxTime;
 extern NSString *const kFCTemperatureMin;
 extern NSString *const kFCTemperatureMinError;
 extern NSString *const kFCTemperatureMinTime;
+extern NSString *const kFCApparentTemperature;
 extern NSString *const kFCTime;
 extern NSString *const kFCVisibility;
 extern NSString *const kFCVisibilityError;
@@ -105,6 +106,10 @@ extern NSString *const kFCIconHail;
 extern NSString *const kFCIconThunderstorm;
 extern NSString *const kFCIconTornado;
 extern NSString *const kFCIconHurricane;
+
+// A numerical value representing the distance to the nearest storm
+extern NSString *const kFCNearestStormDistance;
+extern NSString *const kFCNearestStormBearing;
 
 @interface Forecastr : NSObject
 
