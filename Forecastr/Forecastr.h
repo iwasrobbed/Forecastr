@@ -109,7 +109,7 @@ extern NSString *const kFCIconHurricane;
 
 // A numerical value representing the distance to the nearest storm
 extern NSString *const kFCNearestStormDistance;
-extern NSString *const kFCnearestStormBearing;
+extern NSString *const kFCNearestStormBearing;
 
 @interface Forecastr : NSObject
 

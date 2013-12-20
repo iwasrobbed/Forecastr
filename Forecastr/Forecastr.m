@@ -121,7 +121,7 @@ NSString *const kFCIconHurricane = @"hurricane";
 
 // A numerical value representing the distance to the nearest storm
 NSString *const kFCNearestStormDistance = @"nearestStormDistance";
-NSString *const kFCnearestStormBearing = @"nearestStormBearing";
+NSString *const kFCNearestStormBearing = @"nearestStormBearing";
 
 @interface Forecastr ()
 {
