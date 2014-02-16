@@ -173,8 +173,10 @@ static NSString *kFCTimeoutError = @"There was a timeout while attempting to det
 # pragma mark - Location Services Delegate
 
 // Find and store a location measurement that meets the desired horizontal accuracy
-- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
+    CLLocation *newLocation = [locations lastObject];
+    
     // Test the age of the location measurement to determine if the measurement is cached (in which case, we don't want it)
     NSTimeInterval locationAge = -[newLocation.timestamp timeIntervalSinceNow];
     if (locationAge > 5.0) return;
