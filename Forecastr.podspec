@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.homepage     = "https://github.com/iwasrobbed/Forecastr"
   s.license      = { :type => 'MIT', :file => 'LICENSE' }
   s.author       = 'Rob Phillips'
-  s.source       = { :git => "https://github.com/iwasrobbed/Forecastr.git", :tag => "v" + s.version.to_s }
+  s.source       = { :git => "https://github.com/mikeMTOL/Forecastr.git", :tag => "v" + s.version.to_s }
   s.ios.deployment_target = '7.0'
   s.osx.deployment_target = '10.8'
   s.source_files = 'Forecastr'
