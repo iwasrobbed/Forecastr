@@ -75,6 +75,9 @@ static double kDemoDateTime = 1364991687; // EPOCH time
     
     // Kick off asking for weather with extended hourly option
     [self forecastWithExtendHourly];
+    
+    // Kick off asking for weather in another language
+    [self forecastInFrench];
 }
 
 // Kick off asking for weather data for Montreal on 2013-04-03 12:21:27 +0000
@@ -138,7 +141,7 @@ static double kDemoDateTime = 1364991687; // EPOCH time
 {
     // We will be removing the item that was cached in the `forecastWithoutTime` method
     // You might have to run this app twice for it to be cached first (since the requests are async)
-    [forecastr removeCachedForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:nil extend:nil];
+    [forecastr removeCachedForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:nil extend:nil language:nil];
 }
 
 // Kick off asking for weather with extended hourly option
@@ -146,6 +149,15 @@ static double kDemoDateTime = 1364991687; // EPOCH time
 {
     [forecastr getForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:nil extend:kFCExtendHourly success:^(id JSON) {
         NSLog(@"JSON Response (w/ extended hourly) was: %@", JSON);
+    } failure:^(NSError *error, id response) {
+        NSLog(@"Error while retrieving forecast: %@", [forecastr messageForError:error withResponse:response]);
+    }];
+}
+
+// Kick off asking for weather in another language
+- (void)forecastInFrench {
+    [forecastr getForecastForLatitude:kDemoLatitude longitude:kDemoLongitude time:nil exclusions:nil extend:nil language:kFCLanguageFrench success:^(id JSON) {
+        NSLog(@"JSON Response (en française) was: %@", JSON);
     } failure:^(NSError *error, id response) {
         NSLog(@"Error while retrieving forecast: %@", [forecastr messageForError:error withResponse:response]);
     }];

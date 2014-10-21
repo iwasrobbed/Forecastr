@@ -5,7 +5,7 @@ A simple Objective-C wrapper to make asynchronous requests to the [Forecast.io A
 
 **Note:** You will need to [request an API key](https://developer.forecast.io) and set that key when you first instantiate Forecastr, otherwise an exception will be thrown.
 
-**Updated to match the Forecast.io API as of August 4, 2013**
+**Updated to match the Forecast.io API as of October 21, 2014**
 
 ## Quick Examples ##
 
@@ -35,7 +35,7 @@ And here is a very basic example:
     forecastr = [Forecastr sharedManager];
     forecastr.apiKey = @""; // You will need to set the API key here (only set it once in the entire app)
 
-    [forecastr getForecastForLatitude:45.5081 longitude:-73.5550 time:nil exclusions:nil extend:nil success:^(id JSON) {
+    [forecastr getForecastForLatitude:45.5081 longitude:-73.5550 time:nil exclusions:nil extend:nil language:nil success:^(id JSON) {
         NSLog(@"JSON Response was: %@", JSON);
     } failure:^(NSError *error, id response) {
         NSLog(@"Error while retrieving forecast: %@", [forecastr messageForError:error withResponse:response]);
@@ -48,6 +48,7 @@ And here is a very basic example:
 ## Supports ##
 * Basic, asynchronous caching of the requests based on the URL used to make the request.  This is to prevent unnecessary data usage and round trips to Forecast.io
 * Specifying `US`, `SI`, `UK`, or `CA` units
+* Specifying weather description language as `bs` (Bosnian), `de` (German), `en` (English, which is the default), `es` (Spanish), `fr` (French), `it` (Italian), `nl` (Dutch), `pl` (Polish), `pt` (Portuguese), `tet` (Tetum), or `x-pig-latin` (Pig Latin)
 * Specifying a JSONP callback method name (e.g. `someJavascriptMethodName({jsonResponseGoesHere})`)
 * Specifying exclusions in the response (e.g. leaving out `currently`, `minutely`, `hourly`, `daily`, `alerts`, or `flags`)
 * Canceling any existing forecast requests with `[forecastr cancelAllForecastRequests];`
@@ -101,5 +102,6 @@ A HUGE thank you to the following people for helping me improve and maintain For
 * [Richard Fung](https://github.com/rhfung)
 * [Matthew Morey](https://github.com/mmorey)
 * [Joe](https://github.com/jregan)
+* [chrisgonzgonz](https://github.com/chrisgonzgonz) and [Mike](https://github.com/mikeMTOL)
 
 If you'd like to help, please submit a pull request with tested code and please also update any examples that your code might affect.

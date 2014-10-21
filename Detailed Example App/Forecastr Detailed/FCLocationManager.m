@@ -78,6 +78,13 @@ static NSString *kFCTimeoutError = @"There was a timeout while attempting to det
     if (!locationManager) locationManager = [[CLLocationManager alloc] init];
     locationManager.delegate = self;
     
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1
+    if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_7_1 && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined) {
+        // Request permission if necessary
+        [locationManager requestWhenInUseAuthorization];
+    }
+#endif /* __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1 */
+    
     // Set accuracy (i.e battery power consumption) and start updating
     locationManager.desiredAccuracy = kCLLocationAccuracyKilometer;
     [locationManager startUpdatingLocation];

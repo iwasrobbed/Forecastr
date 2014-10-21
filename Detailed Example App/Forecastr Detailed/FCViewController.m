@@ -61,7 +61,7 @@
 // Basic forecast example
 - (void)exampleForecastForLocation:(CLLocation *)location
 {
-    [forecastr getForecastForLocation:location time:nil exclusions:nil extend:nil success:^(id JSON) {
+    [forecastr getForecastForLocation:location time:nil exclusions:nil extend:nil language:nil success:^(id JSON) {
         NSLog(@"JSON response was: %@", JSON);
     } failure:^(NSError *error, id response) {
         NSLog(@"Error while retrieving forecast: %@", [forecastr messageForError:error withResponse:response]);

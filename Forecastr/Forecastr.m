@@ -52,6 +52,19 @@ NSString *const kFCUKUnits = @"uk";
 NSString *const kFCCAUnits = @"ca";
 NSString *const kFCAutoUnits = @"auto";
 
+// Languages
+NSString *const kFCLanguageBosnian = @"bs";
+NSString *const kFCLanguageGerman = @"de";
+NSString *const kFCLanguageEnglish = @"en"; // Default
+NSString *const kFCLanguageSpanish = @"es";
+NSString *const kFCLanguageFrench = @"fr";
+NSString *const kFCLanguageItalian = @"it";
+NSString *const kFCLanguageDutch = @"nl";
+NSString *const kFCLanguagePolish = @"pl";
+NSString *const kFCLanguagePortuguese = @"pt";
+NSString *const kFCLanguageTetum = @"tet";
+NSString *const kFCLanguagePigLatin = @"x-pig-latin";
+
 // Extend types
 NSString *const kFCExtendHourly = @"hourly";
 
@@ -76,6 +89,7 @@ NSString *const kFCDewPoint = @"dewPoint";
 NSString *const kFCHumidity = @"humidity";
 NSString *const kFCHumidityError = @"humidityError";
 NSString *const kFCIcon = @"icon";
+NSString *const kFCMoonPhase = @"moonPhase";
 NSString *const kFCOzone = @"ozone";
 NSString *const kFCPrecipAccumulation = @"precipAccumulation";
 NSString *const kFCPrecipIntensity = @"precipIntensity";
@@ -162,7 +176,6 @@ NSString *const kFCNearestStormBearing = @"nearestStormBearing";
 
 # pragma mark - Instance Methods
 
-// Deprecated method
 - (void)getForecastForLatitude:(double)lat
                      longitude:(double)lon
                           time:(NSNumber *)time
@@ -173,12 +186,24 @@ NSString *const kFCNearestStormBearing = @"nearestStormBearing";
   [self getForecastForLatitude:lat longitude:lon time:time exclusions:exclusions extend:nil success:success failure:failure];
 }
 
-// Requests the specified forecast for the given location and optional time
 - (void)getForecastForLatitude:(double)lat
                      longitude:(double)lon
                           time:(NSNumber *)time
                     exclusions:(NSArray *)exclusions
-                        extend:(NSString*)extendCommand
+                        extend:(NSString *)extendCommand
+                       success:(void (^)(id JSON))success
+                       failure:(void (^)(NSError *error, id response))failure
+{
+    [self getForecastForLatitude:lat longitude:lon time:time exclusions:exclusions extend:nil language:nil success:success failure:failure];
+}
+
+// Requests the specified forecast for the given location and optional parameters
+- (void)getForecastForLatitude:(double)lat
+                     longitude:(double)lon
+                          time:(NSNumber *)time
+                    exclusions:(NSArray *)exclusions
+                        extend:(NSString *)extendCommand
+                      language:(NSString *)languageCode
                        success:(void (^)(id JSON))success
                        failure:(void (^)(NSError *error, id response))failure
 {
@@ -186,11 +211,13 @@ NSString *const kFCNearestStormBearing = @"nearestStormBearing";
     [self checkForAPIKey];
     
     // Generate the URL string based on the passed in params
-    NSString *urlString = [self urlStringforLatitude:lat longitude:lon time:time exclusions:exclusions extend:(NSString*)extendCommand];
+    NSString *urlString = [self urlStringforLatitude:lat longitude:lon time:time exclusions:exclusions extend:(NSString *)extendCommand language:languageCode];
     
 #ifndef NDEBUG
     NSLog(@"Forecastr: Checking forecast for %@", urlString);
 #endif
+    
+    NSString *callback = self.callback;
     
     // Check if we have a valid cache item that hasn't expired for this URL
     // If caching isn't enabled or a fresh cache item wasn't found, it will execute a server request in the failure block
@@ -202,14 +229,17 @@ NSString *const kFCNearestStormBearing = @"nearestStormBearing";
         // for this location in cache so let's query the servers for one
         
         // Asynchronously kick off the GET request on the API for the generated URL (i.e. not the one used as a cache key)
-        if (self.callback) {
+        if (callback) {
             
+            [ForecastrAPIClient sharedClient].responseSerializer = [AFHTTPResponseSerializer serializer];
             [[ForecastrAPIClient sharedClient] GET:urlString parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
                 NSString *JSONP = [[NSString alloc] initWithData:responseObject encoding:NSASCIIStringEncoding];
                 if (self.cacheEnabled) [self cacheForecast:JSONP withURLString:cacheKey];
+                [ForecastrAPIClient sharedClient].responseSerializer = [AFJSONResponseSerializer serializer];
                 success(JSONP);
             } failure:^(NSURLSessionDataTask *task, NSError *error) {
                 NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
+                [ForecastrAPIClient sharedClient].responseSerializer = [AFJSONResponseSerializer serializer];
                 failure(error, response);
             }];
             
@@ -275,9 +305,9 @@ NSString *const kFCNearestStormBearing = @"nearestStormBearing";
         return (errorMsg.length) ? errorMsg : error.localizedDescription;
     } else if ([response isKindOfClass:[AFHTTPRequestOperation class]]) {
         AFHTTPRequestOperation *operation = (AFHTTPRequestOperation *)response;
-        int statusCode = operation.response.statusCode;
+        NSInteger statusCode = operation.response.statusCode;
         NSString *errorMsg = [NSHTTPURLResponse localizedStringForStatusCode:statusCode];
-        return [errorMsg stringByAppendingFormat:@" (code %d)", statusCode];
+        return [errorMsg stringByAppendingFormat:@" (code %ld)", (long)statusCode];
     } else {
         return error.localizedDescription;
     }
@@ -294,14 +324,15 @@ NSString *const kFCNearestStormBearing = @"nearestStormBearing";
 }
 
 // Generates a URL string for the given options
-- (NSString *)urlStringforLatitude:(double)lat longitude:(double)lon time:(NSNumber *)time exclusions:(NSArray *)exclusions extend:(NSString*)extendCommand
+- (NSString *)urlStringforLatitude:(double)lat longitude:(double)lon time:(NSNumber *)time exclusions:(NSArray *)exclusions extend:(NSString *)extendCommand language:(NSString *)languageCode
 {
     NSString *urlString = [NSString stringWithFormat:@"%@/%.6f,%.6f", self.apiKey, lat, lon];
     if (time) urlString = [urlString stringByAppendingFormat:@",%.0f", [time doubleValue]];
     if (exclusions) urlString = [urlString stringByAppendingFormat:@"?exclude=%@", [self stringForExclusions:exclusions]];
     if (extendCommand) urlString = [urlString stringByAppendingFormat:@"%@extend=%@", exclusions ? @"&" : @"?", extendCommand];
-    if (self.units) urlString = [urlString stringByAppendingFormat:@"%@units=%@", (exclusions || extendCommand) ? @"&" : @"?", self.units];
-    if (self.callback) urlString = [urlString stringByAppendingFormat:@"%@callback=%@", (exclusions || self.units || extendCommand) ? @"&" : @"?", self.callback];
+    if (languageCode) urlString = [urlString stringByAppendingFormat:@"%@lang=%@", (exclusions || extendCommand) ? @"&" : @"?", languageCode];
+    if (self.units) urlString = [urlString stringByAppendingFormat:@"%@units=%@", (exclusions || extendCommand || languageCode) ? @"&" : @"?", self.units];
+    if (self.callback) urlString = [urlString stringByAppendingFormat:@"%@callback=%@", (exclusions || self.units || extendCommand || languageCode) ? @"&" : @"?", self.callback];
     return urlString;
 }
 
@@ -402,15 +433,15 @@ NSString *const kFCNearestStormBearing = @"nearestStormBearing";
 }
 
 // Deprecated method
-- (void)removeCachedForecastForLatitude:(double)lat longitude:(double)lon time:(NSNumber *)time exclusions:(NSArray *)exclusions
+- (void)removeCachedForecastForLatitude:(double)lat longitude:(double)lon time:(NSNumber *)time exclusions:(NSArray *)exclusions extend:(NSString *)extendCommand
 {
-  [self removeCachedForecastForLatitude:lat longitude:lon time:time exclusions:exclusions extend:nil];
+    [self removeCachedForecastForLatitude:lat longitude:lon time:time exclusions:exclusions extend:extendCommand language:nil];
 }
 
 // Removes a cached forecast in case you want to refresh it prematurely
-- (void)removeCachedForecastForLatitude:(double)lat longitude:(double)lon time:(NSNumber *)time exclusions:(NSArray *)exclusions extend:(NSString*)extendCommand
+- (void)removeCachedForecastForLatitude:(double)lat longitude:(double)lon time:(NSNumber *)time exclusions:(NSArray *)exclusions extend:(NSString *)extendCommand language:(NSString *)languageCode
 {
-    NSString *urlString = [self urlStringforLatitude:lat longitude:lon time:time exclusions:exclusions extend:extendCommand];
+    NSString *urlString = [self urlStringforLatitude:lat longitude:lon time:time exclusions:exclusions extend:extendCommand language:languageCode];
     NSString *cacheKey = [self cacheKeyForURLString:urlString forLatitude:lat longitude:lon];
     
     NSMutableDictionary *cachedForecasts = [[userDefaults dictionaryForKey:kFCCacheKey] mutableCopy];

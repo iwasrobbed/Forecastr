@@ -31,6 +31,7 @@
 		D452BB3B170C4F0300B415CF /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D452BB39170C4F0300B415CF /* MainStoryboard.storyboard */; };
 		D452BB3E170C4F0300B415CF /* FCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D452BB3D170C4F0300B415CF /* FCViewController.m */; };
 		D452BB46170C507700B415CF /* Forecastr.m in Sources */ = {isa = PBXBuildFile; fileRef = D452BB45170C507700B415CF /* Forecastr.m */; };
+		D465011D19F6B0E500C3C8D0 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D465011C19F6B0E500C3C8D0 /* MobileCoreServices.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -75,6 +76,7 @@
 		D452BB3D170C4F0300B415CF /* FCViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FCViewController.m; sourceTree = "<group>"; };
 		D452BB44170C507700B415CF /* Forecastr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Forecastr.h; path = ../Forecastr/Forecastr.h; sourceTree = "<group>"; };
 		D452BB45170C507700B415CF /* Forecastr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Forecastr.m; path = ../Forecastr/Forecastr.m; sourceTree = "<group>"; };
+		D465011C19F6B0E500C3C8D0 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +84,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D465011D19F6B0E500C3C8D0 /* MobileCoreServices.framework in Frameworks */,
 				4AD037E817FDC2EE002FE68D /* SystemConfiguration.framework in Frameworks */,
 				4AD037E617FDC2D6002FE68D /* Security.framework in Frameworks */,
 				D452BB22170C4F0300B415CF /* UIKit.framework in Frameworks */,
@@ -142,6 +145,7 @@
 		D452BB20170C4F0200B415CF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D465011C19F6B0E500C3C8D0 /* MobileCoreServices.framework */,
 				4AD037E717FDC2EE002FE68D /* SystemConfiguration.framework */,
 				4AD037E517FDC2D6002FE68D /* Security.framework */,
 				D452BB21170C4F0200B415CF /* UIKit.framework */,

@@ -32,6 +32,7 @@
                           time:(NSNumber *)time
                     exclusions:(NSArray *)exclusions
                         extend:(NSString*)extendCommand
+                      language:(NSString *)languageCode
                        success:(void (^)(id JSON))success
                        failure:(void (^)(NSError *error, id response))failure
 {
@@ -48,10 +49,20 @@
 - (void)getForecastForLocation:(CLLocation *)location
                           time:(NSNumber *)time
                     exclusions:(NSArray *)exclusions
+                        extend:(NSString*)extendCommand
                        success:(void (^)(id JSON))success
                        failure:(void (^)(NSError *error, id response))failure
 {
-  [self getForecastForLocation:location time:time exclusions:exclusions extend:nil success:success failure:failure];
+    [self getForecastForLocation:location time:time exclusions:exclusions extend:extendCommand language:nil success:success failure:failure];
+}
+
+- (void)getForecastForLocation:(CLLocation *)location
+                          time:(NSNumber *)time
+                    exclusions:(NSArray *)exclusions
+                       success:(void (^)(id JSON))success
+                       failure:(void (^)(NSError *error, id response))failure
+{
+    [self getForecastForLocation:location time:time exclusions:exclusions extend:nil success:success failure:failure];
 }
 
 // Removes a cached forecast in case you want to refresh it prematurely
@@ -59,18 +70,21 @@
                                    time:(NSNumber *)time
                              exclusions:(NSArray *)exclusions
                                  extend:(NSString*)extendCommand
+                               language:(NSString *)languageCode
 {
     float latitude = location.coordinate.latitude;
     float longitude = location.coordinate.longitude;
     
-    [self removeCachedForecastForLatitude:latitude longitude:longitude time:time exclusions:exclusions extend:extendCommand];
+    [self removeCachedForecastForLatitude:latitude longitude:longitude time:time exclusions:exclusions extend:extendCommand language:nil];
 }
 
+// Deprecated method
 - (void)removeCachedForecastForLocation:(CLLocation *)location
                                    time:(NSNumber *)time
                              exclusions:(NSArray *)exclusions
+                                 extend:(NSString*)extendCommand
 {
-  [self removeCachedForecastForLocation:location time:time exclusions:exclusions extend:nil];
+    [self removeCachedForecastForLocation:location time:time exclusions:exclusions extend:extendCommand language:nil];
 }
 
 @end

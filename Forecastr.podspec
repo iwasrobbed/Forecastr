@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "Forecastr"
-  s.version      = "0.1.3"
+  s.version      = "0.2.0"
   s.summary      = "A simple, asynchronous Objective-C wrapper for the Forecast.io API."
   s.homepage     = "https://github.com/iwasrobbed/Forecastr"
   s.license      = { :type => 'MIT', :file => 'LICENSE' }

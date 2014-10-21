@@ -40,6 +40,19 @@ extern NSString *const kFCUKUnits;
 extern NSString *const kFCCAUnits;
 extern NSString *const kFCAutoUnits;
 
+// Languages
+extern NSString *const kFCLanguageBosnian;
+extern NSString *const kFCLanguageGerman;
+extern NSString *const kFCLanguageEnglish;
+extern NSString *const kFCLanguageSpanish;
+extern NSString *const kFCLanguageFrench;
+extern NSString *const kFCLanguageItalian;
+extern NSString *const kFCLanguageDutch;
+extern NSString *const kFCLanguagePolish;
+extern NSString *const kFCLanguagePortuguese;
+extern NSString *const kFCLanguageTetum;
+extern NSString *const kFCLanguagePigLatin;
+
 // Extend types
 extern NSString *const kFCExtendHourly;
 
@@ -64,6 +77,7 @@ extern NSString *const kFCDewPoint;
 extern NSString *const kFCHumidity;
 extern NSString *const kFCHumidityError;
 extern NSString *const kFCIcon;
+extern NSString *const kFCMoonPhase;
 extern NSString *const kFCOzone;
 extern NSString *const kFCPrecipAccumulation;
 extern NSString *const kFCPrecipIntensity;
@@ -149,7 +163,7 @@ extern NSString *const kFCNearestStormBearing;
                           time:(NSNumber *)time
                     exclusions:(NSArray *)exclusions
                        success:(void (^)(id JSON))success
-                       failure:(void (^)(NSError *error, id response))failure DEPRECATED_ATTRIBUTE;
+                       failure:(void (^)(NSError *error, id response))failure;
 
 /**
  * Requests the forecast for the given location and optional time and/or exclusions
@@ -174,6 +188,33 @@ extern NSString *const kFCNearestStormBearing;
                         extend:(NSString*)extendCommand
                        success:(void (^)(id JSON))success
                        failure:(void (^)(NSError *error, id response))failure;
+
+/**
+ * Requests the forecast for the given location and optional time and/or exclusions
+ *
+ * @return The JSON response
+ *
+ * @param lat The latitude of the location.
+ * @param long The longitude of the location.
+ * @param time (Optional) The desired time of the forecast in UNIX GMT format
+ * @param exclusions (Optional) An array which specifies which data blocks you would like left off the response
+ * @param extend (Optional) Extra commands that are sent to the server
+ * @param language (Optional) Specify which language you want the weather descriptions in
+ * @param success A block object to be executed when the operation finishes successfully.
+ * @param failure A block object to be executed when the operation finishes unsuccessfully.
+ *
+ * @discussion For many locations, it can be 60 years in the past to 10 years in the future.
+ */
+
+- (void)getForecastForLatitude:(double)lat
+                     longitude:(double)lon
+                          time:(NSNumber *)time
+                    exclusions:(NSArray *)exclusions
+                        extend:(NSString *)extendCommand
+                      language:(NSString *)languageCode
+                       success:(void (^)(id JSON))success
+                       failure:(void (^)(NSError *error, id response))failure;
+
 
 /**
  * Cancels all requests that are currently being executed
@@ -232,11 +273,13 @@ extern NSString *const kFCNearestStormBearing;
  * @param long The longitude of the location.
  * @param time (Optional) The desired time of the forecast in UNIX GMT format
  * @param exclusions (Optional) An array which specifies which data blocks you would like left off the response
+ * @param extend (Optional) Extra commands that are sent to the server
  */
 - (void)removeCachedForecastForLatitude:(double)lat
                               longitude:(double)lon
                                    time:(NSNumber *)time
-                             exclusions:(NSArray *)exclusions DEPRECATED_ATTRIBUTE;
+                             exclusions:(NSArray *)exclusions
+                                 extend:(NSString *)extendCommand DEPRECATED_ATTRIBUTE;
 
 /**
  * Removes a cached forecast in case you want to refresh it prematurely
@@ -247,12 +290,15 @@ extern NSString *const kFCNearestStormBearing;
  * @param time (Optional) The desired time of the forecast in UNIX GMT format
  * @param exclusions (Optional) An array which specifies which data blocks you would like left off the response
  * @param extend (Optional) Extra commands that are sent to the server
+ * @param language (Optional) Specify which language you want the weather descriptions in
  */
 - (void)removeCachedForecastForLatitude:(double)lat
                               longitude:(double)lon
                                    time:(NSNumber *)time
                              exclusions:(NSArray *)exclusions
-                                 extend:(NSString*)extendCommand;
+                                 extend:(NSString *)extendCommand
+                               language:(NSString *)languageCode;
+
 
 /**
  * Flushes all forecasts from the cache

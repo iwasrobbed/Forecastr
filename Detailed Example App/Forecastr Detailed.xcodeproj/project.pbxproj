@@ -34,6 +34,7 @@
 		D452BBC0170C772800B415CF /* Forecastr.m in Sources */ = {isa = PBXBuildFile; fileRef = D452BBB5170C772800B415CF /* Forecastr.m */; };
 		D452BBC3170C789500B415CF /* FCLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D452BBC2170C789500B415CF /* FCLocationManager.m */; };
 		D452BBC8170C81DD00B415CF /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D452BBC7170C81DD00B415CF /* CoreLocation.framework */; };
+		D465011B19F6AF6D00C3C8D0 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D465011A19F6AF6D00C3C8D0 /* MobileCoreServices.framework */; };
 		D4C6F813170DAF47005E2D75 /* ForecastrUnits.plist in Resources */ = {isa = PBXBuildFile; fileRef = D4C6F812170DAF47005E2D75 /* ForecastrUnits.plist */; };
 /* End PBXBuildFile section */
 
@@ -84,6 +85,7 @@
 		D452BBC1170C789500B415CF /* FCLocationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FCLocationManager.h; sourceTree = "<group>"; };
 		D452BBC2170C789500B415CF /* FCLocationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FCLocationManager.m; sourceTree = "<group>"; };
 		D452BBC7170C81DD00B415CF /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		D465011A19F6AF6D00C3C8D0 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		D4C6F812170DAF47005E2D75 /* ForecastrUnits.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = ForecastrUnits.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -92,6 +94,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D465011B19F6AF6D00C3C8D0 /* MobileCoreServices.framework in Frameworks */,
 				4AD037C217FDA748002FE68D /* Security.framework in Frameworks */,
 				4AD037C017FDA718002FE68D /* SystemConfiguration.framework in Frameworks */,
 				D452BBC8170C81DD00B415CF /* CoreLocation.framework in Frameworks */,
@@ -153,6 +156,7 @@
 		D452BB79170C76F900B415CF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D465011A19F6AF6D00C3C8D0 /* MobileCoreServices.framework */,
 				4AD037C117FDA748002FE68D /* Security.framework */,
 				4AD037BF17FDA718002FE68D /* SystemConfiguration.framework */,
 				D452BBC7170C81DD00B415CF /* CoreLocation.framework */,
