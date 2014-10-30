@@ -1,6 +1,8 @@
 Forecastr
 =========
 
+Support this project via Gratipay <a href="https://gratipay.com/iwasrobbed/"><img src="http://img.shields.io/gratipay/iwasrobbed.svg"></a>
+
 A simple Objective-C wrapper to make asynchronous requests to the [Forecast.io API version 2](https://developer.forecast.io/docs/v2)
 
 **Note:** You will need to [request an API key](https://developer.forecast.io) and set that key when you first instantiate Forecastr, otherwise an exception will be thrown.
