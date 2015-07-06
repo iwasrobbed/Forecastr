@@ -12,5 +12,5 @@ Pod::Spec.new do |s|
   s.resources = "Forecastr/*.plist"
   s.framework  = 'CoreLocation'
   s.requires_arc = true
-  s.dependency 'AFNetworking', '~> 2.4.1'
+  s.dependency 'AFNetworking', '~> 2.5.4'
 end
