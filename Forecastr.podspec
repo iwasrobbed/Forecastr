@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "Forecastr"
-  s.version      = "0.2.2"
+  s.version      = "0.2.3"
   s.summary      = "A simple, asynchronous Objective-C wrapper for the Forecast.io API."
   s.homepage     = "https://github.com/iwasrobbed/Forecastr"
   s.license      = { :type => 'MIT', :file => 'LICENSE' }
@@ -12,5 +12,5 @@ Pod::Spec.new do |s|
   s.resources = "Forecastr/*.plist"
   s.framework  = 'CoreLocation'
   s.requires_arc = true
-  s.dependency 'AFNetworking', '~> 2.5.4'
+  s.dependency 'AFNetworking', '~> 2.6.0'
 end
