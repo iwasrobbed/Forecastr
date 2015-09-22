@@ -107,5 +107,6 @@ A HUGE thank you to the following people for helping me improve and maintain For
 * [chrisgonzgonz](https://github.com/chrisgonzgonz) and [Mike](https://github.com/mikeMTOL)
 * [Jeff Dlouhy](https://github.com/jeffd)
 * [Jonathan Dalrymple](https://github.com/veritech)
+* [Ben DiFrancesco](https://github.com/apbendi)
 
 If you'd like to help, please submit a pull request with tested code and please also update any examples that your code might affect.
