@@ -7,7 +7,6 @@ Pod::Spec.new do |s|
   s.author       = 'Rob Phillips'
   s.source       = { :git => "https://github.com/iwasrobbed/Forecastr.git", :tag => "v" + s.version.to_s }
   s.ios.deployment_target = '7.0'
-  s.osx.deployment_target = '10.8'
   s.source_files = 'Forecastr'
   s.resources = "Forecastr/*.plist"
   s.framework  = 'CoreLocation'
